@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 function Navbar() {
   return (
@@ -11,10 +12,22 @@ function Navbar() {
         borderBottom: "1px solid #ccc",
       }}
     >
-      <div style={{ fontWeight: "bold", fontSize: "1.2rem" }}>Mangatari</div>
+      <Link
+        to="/"
+        style={{ fontWeight: "bold", fontSize: "1.2rem", textDecoration: "none", color: "inherit" }}
+      >
+        Mangatari
+      </Link>
       <div style={{ display: "flex", gap: "1rem" }}>
-        <span>Manga</span>
-        <span>Anime</span>
+        <Link to="/mangas" style={{ textDecoration: "none", color: "inherit" }}>
+          Manga
+        </Link>
+        <Link to="/animes" style={{ textDecoration: "none", color: "inherit" }}>
+          Anime
+        </Link>
+        <Link to="/about" style={{ textDecoration: "none", color: "inherit" }}>
+          About
+        </Link>
         <span>Logout</span>
       </div>
     </nav>
