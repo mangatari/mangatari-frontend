@@ -1,12 +1,10 @@
-// src/context/auth.context.tsx
-
 import React, { useState, useEffect, createContext } from "react";
+import axios from "axios";
 import type { ReactNode } from "react";
 
-const API_URL = "http://localhost:5005";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5005";
 
 interface User {
-  // Adapte esses campos ao seu modelo de usuário
   id?: string;
   name?: string;
   email?: string;
@@ -18,13 +16,19 @@ interface AuthContextType {
   isLoading: boolean;
   user: User | null;
   updateUser: (newUser: User | null) => void;
+  storeToken: (token: string) => void;
+  authenticateUser: () => void;
+  logOutUser: () => void;
 }
 
 export const AuthContext = createContext<AuthContextType>({
   isLoggedIn: false,
   isLoading: true,
   user: null,
-  updateUser: () => {}, // Default implementation for updateUser
+  updateUser: () => {},
+  storeToken: () => {},
+  authenticateUser: () => {},
+  logOutUser: () => {},
 });
 
 interface AuthProviderProps {
@@ -36,26 +40,60 @@ function AuthProviderWrapper({ children }: AuthProviderProps) {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [user, setUser] = useState<User | null>(null);
 
-  useEffect(() => {
-    // Example logic to update isLoggedIn based on user state
-    if (user) {
-      setIsLoggedIn(true);
+  const storeToken = (token: string) => {
+    localStorage.setItem("authToken", token);
+  };
+
+  const authenticateUser = () => {
+    const storedToken = localStorage.getItem("authToken");
+
+    if (storedToken) {
+      axios
+        .get(`${API_URL}/auth/verify`, {
+          headers: { Authorization: `Bearer ${storedToken}` },
+        })
+        .then((response) => {
+          setUser(response.data as User);
+          setIsLoggedIn(true);
+        })
+        .catch(() => {
+          setUser(null);
+          setIsLoggedIn(false);
+        })
+        .then(() => setIsLoading(false), () => setIsLoading(false));
     } else {
       setIsLoggedIn(false);
+      setUser(null);
+      setIsLoading(false);
     }
-  }, [user]);
+  };
 
-  /*
-    Functions for handling the authentication status (isLoggedIn, isLoading, user)
-    will be added here later in the next step
-  */
+  const logOutUser = () => {
+    localStorage.removeItem("authToken");
+    setIsLoggedIn(false);
+    setUser(null);
+  };
 
   const updateUser = (newUser: User | null) => {
     setUser(newUser);
   };
 
+  useEffect(() => {
+    authenticateUser();
+  }, []);
+
   return (
-    <AuthContext.Provider value={{ isLoggedIn, isLoading, user, updateUser }}>
+    <AuthContext.Provider
+      value={{
+        isLoggedIn,
+        isLoading,
+        user,
+        updateUser,
+        storeToken,
+        authenticateUser,
+        logOutUser,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
