@@ -93,6 +93,9 @@ function MangaDetails() {
             <Link to="/mangalist" className="back-link">
               &larr; Back to Manga
             </Link>
+            <Link to={`/mangas/edit/${mangaId}`} className="back-link">
+              &larr; Edit Manga
+            </Link>
           </div>
         </div>
       </div>
