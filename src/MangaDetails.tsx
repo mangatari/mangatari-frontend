@@ -6,17 +6,17 @@ import { Rating } from "@mantine/core";
 const API_URL = import.meta.env.VITE_API_URL;
 
 interface Manga {
-  rating: number;
-  image: string;
+  id: number;
   title: string;
-  genre: string;
-  year: number;
-  chapters: number;
-  author: string;
-  description: string;
-  volumes?: number;
-  status?: string;
-  [key: string]: any;
+  description?: string | null;
+  year?: number | null;
+  chapters?: number | null;
+  volumes?: number | null;
+  author?: string | null;
+  genre?: string | null;
+  status?: string | null;
+  rating?: number | null;
+  image?: string | null;
 }
 
 function MangaDetails() {
@@ -28,7 +28,7 @@ function MangaDetails() {
     setManga((prev) => ({ ...prev, rating: value * 2 } as Manga));
 
     axios
-      .put<Manga>(`${API_URL}/api/manga/${mangaId}`, { rating: value * 2 })
+      .put<Manga>(`${API_URL}/api/mangas/${mangaId}`, { rating: value * 2 })
       .then((response) => {
         setManga(response.data);
       })
@@ -43,9 +43,9 @@ function MangaDetails() {
       console.warn("mangaId is undefined");
       return;
     }
-  
+
     axios
-      .get<Manga>(`${API_URL}/api/manga/${mangaId}`)
+      .get<Manga>(`${API_URL}/api/mangas/${mangaId}`)
       .then((response) => {
         setManga(response.data);
         setLoading(false);
@@ -56,41 +56,157 @@ function MangaDetails() {
       });
   }, [mangaId]);
 
-  if (loading) return <div className="pokemon-title">Loading...</div>;
-  if (!manga) return <div className="pokemon-title">No manga found...</div>;
+  if (loading) return <div className="loading-text">Loading...</div>;
+  if (!manga) return <div className="loading-text">No manga found...</div>;
 
   return (
-    <div className="pokemon-container">
-      <div className="pokemon-card">
-        {manga.image && <img src={manga.image} alt={manga.title} />}
+    <div className="anime-container">
+      <div className="anime-card">
+        {manga.image && (
+          <img src={manga.image} alt={manga.title} className="anime-image" />
+        )}
 
-        <h2>{manga.title}</h2>
-        <p><strong>Genre:</strong> {manga.genre}</p>
-        <p><strong>Year:</strong> {manga.year}</p>
-        <p><strong>Author:</strong> {manga.author}</p>
-        <p><strong>Status:</strong> {manga.status}</p>
-        <p><strong>Volumes:</strong> {manga.volumes}</p>
-        <p><strong>Chapters:</strong> {manga.chapters}</p>
-        <p>{manga.description}</p>
+        <div className="anime-info">
+          <h2 className="square">{manga.title}</h2>
 
-        <div>
-          <p><strong>Your Rating:</strong></p>
-          <Rating
-            value={manga.rating ? manga.rating / 2 : 0}
-            onChange={handleRatingChange}
-            fractions={2}
-            color="violet"
-            size="lg"
-          />
-          <p className="text-xs mt-1">{manga.rating}/10</p>
-        </div>
+          <p><strong className="square">Genre:</strong> {manga.genre ?? "N/A"}</p>
+          <p><strong className="square">Year:</strong> {manga.year ?? "N/A"}</p>
+          <p><strong className="square">Author:</strong> {manga.author ?? "N/A"}</p>
+          <p><strong className="square">Status:</strong> {manga.status ?? "N/A"}</p>
+          <p><strong className="square">Volumes:</strong> {manga.volumes ?? "N/A"}</p>
+          <p><strong className="square">Chapters:</strong> {manga.chapters ?? "N/A"}</p>
+          <p className="anime-description">{manga.description ?? "No description available."}</p>
 
-        <div className="mt-6">
-          <Link to="/mangalist" className="pokemon-button">
-            &larr; Back to Manga
-          </Link>
+          <div className="rating-section">
+            <p><strong className="square">Your Rating:</strong></p>
+            <Rating
+              value={manga.rating ? manga.rating / 2 : 0}
+              onChange={handleRatingChange}
+              fractions={2}
+              color="violet"
+              size="lg"
+            />
+            <p className="rating-value">{manga.rating ?? 0}/10</p>
+          </div>
+
+          <div className="back-link-container">
+            <Link to="/mangalist" className="back-link">
+              &larr; Back to Manga
+            </Link>
+          </div>
         </div>
       </div>
+
+      <style>{`
+        .anime-container {
+          padding: 20px;
+          max-width: 900px;
+          margin: 0 auto;
+          font-family: Arial, sans-serif;
+          color: #222;
+        }
+
+        .anime-card {
+          display: flex;
+          gap: 24px;
+          align-items: flex-start;
+          background: #f9f9f9;
+          border-radius: 12px;
+          padding: 24px;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+          flex-wrap: wrap;
+        }
+
+        .anime-image {
+          width: 280px;
+          height: auto;
+          border-radius: 12px;
+          object-fit: cover;
+          flex-shrink: 0;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        .anime-info {
+          flex: 1;
+          font-size: 1.15rem;
+          line-height: 1.6;
+          min-width: 280px;
+        }
+
+        .anime-title {
+          font-size: 2.5rem;
+          margin-bottom: 20px;
+          font-weight: 700;
+        }
+
+        .anime-info p {
+          margin: 8px 0;
+        }
+
+        .anime-description {
+          margin-top: 16px;
+          font-style: italic;
+          color: #555;
+        }
+
+        .rating-section {
+          margin-top: 24px;
+        }
+
+        .rating-value {
+          margin-top: 4px;
+          font-size: 1rem;
+          color: #6b21a8; /* violet */
+          font-weight: 600;
+        }
+
+        .back-link-container {
+          margin-top: 32px;
+        }
+
+        .back-link {
+          font-size: 1.1rem;
+          text-decoration: none;
+          color: #6b21a8;
+          font-weight: 600;
+          transition: color 0.3s ease;
+        }
+
+        .back-link:hover {
+          color: #4c1586;
+        }
+
+        .loading-text {
+          font-size: 1.5rem;
+          text-align: center;
+          margin-top: 60px;
+          color: #666;
+        }
+
+        @media (max-width: 700px) {
+          .anime-card {
+            flex-direction: column;
+            padding: 16px;
+          }
+
+          .anime-image {
+            width: 100%;
+            max-height: 400px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+          }
+
+          .anime-info {
+            min-width: auto;
+            font-size: 1.1rem;
+          }
+
+          .anime-title {
+            font-size: 2rem;
+            margin-bottom: 12px;
+          }
+        }
+      `}</style>
     </div>
   );
 }
