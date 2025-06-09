@@ -43,7 +43,7 @@ function MangaEditPage() {
   useEffect(() => {
     const token = localStorage.getItem("authToken");
     axios
-      .get(`${API_URL}/api/manga/${mangaId}`, {
+      .get(`${API_URL}/api/mangas/${mangaId}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((response) => {
@@ -84,7 +84,7 @@ function MangaEditPage() {
     }
 
     try {
-      await axios.put(`${API_URL}/api/manga/${mangaId}`, formData, {
+      await axios.put(`${API_URL}/api/mangas/${mangaId}`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
@@ -102,7 +102,7 @@ function MangaEditPage() {
   const deleteManga = () => {
     const token = localStorage.getItem("authToken");
     axios
-      .delete(`${API_URL}/api/manga/${mangaId}`, {
+      .delete(`${API_URL}/api/mangas/${mangaId}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then(() => {
