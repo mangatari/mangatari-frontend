@@ -39,9 +39,9 @@ function HomePage() {
       .catch((e) => console.error('Error fetching mangas:', e));
   }, []);
 
-  // Helper: Show only first 3 items
-  const featuredAnimes = animes.slice(0, 3);
-  const featuredMangas = mangas.slice(0, 3);
+  
+  const featuredAnimes = animes.slice(0, 1);
+  const featuredMangas = mangas.slice(0, 1);
 
   return (
     <div
