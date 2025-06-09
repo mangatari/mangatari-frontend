@@ -6,14 +6,16 @@ import { Rating } from "@mantine/core";
 const API_URL = import.meta.env.VITE_API_URL;
 
 interface Manga {
-  rating?: number;
-  image?: string;
-  title?: string;
-  genre?: string;
-  year?: string;
-  director?: string;
-  iMDB?: string;
-  description?: string;
+  rating: number;
+  image: string;
+  title: string;
+  genre: string;
+  year: number;
+  chapters: number;
+  author: string;
+  description: string;
+  volumes?: number;
+  status?: string;
   [key: string]: any;
 }
 
@@ -37,6 +39,11 @@ function MangaDetails() {
   };
 
   useEffect(() => {
+    if (!mangaId) {
+      console.warn("mangaId is undefined");
+      return;
+    }
+  
     axios
       .get<Manga>(`${API_URL}/api/manga/${mangaId}`)
       .then((response) => {
@@ -60,21 +67,10 @@ function MangaDetails() {
         <h2>{manga.title}</h2>
         <p><strong>Genre:</strong> {manga.genre}</p>
         <p><strong>Year:</strong> {manga.year}</p>
-        <p><strong>Director:</strong> {manga.director}</p>
-
-        {manga.iMDB && (
-          <p>
-            <a
-              href={manga.iMDB}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="pokemon-button"
-            >
-              View on IMDb
-            </a>
-          </p>
-        )}
-
+        <p><strong>Author:</strong> {manga.author}</p>
+        <p><strong>Status:</strong> {manga.status}</p>
+        <p><strong>Volumes:</strong> {manga.volumes}</p>
+        <p><strong>Chapters:</strong> {manga.chapters}</p>
         <p>{manga.description}</p>
 
         <div>

@@ -9,14 +9,17 @@ import "./App.css";
 const API_URL = import.meta.env.VITE_API_URL;
 
 interface Anime {
-  _id: string;
-  title: string;
+  id: number;
+  title:      string;
   description: string;
-  imageUrl?: string;
-  studio?: {
-    name: string;
-  };
-}
+  year:        number;
+  episodes:    number;
+  studio:      string;
+  rating:      number;
+  genre:       string;
+  status:      string;
+  image:       string;
+};
 
 function AnimeList() {
   const [animes, setAnimes] = useState<Anime[]>([]);
@@ -77,19 +80,19 @@ function AnimeList() {
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: "1.5rem" }}>
         {animes.map((anime) => (
           <Link
-            key={anime._id}
-            to={`/animes/${anime._id}`}
+            key={anime.id}
+            to={`/animes/${anime.id}`}
             className="pokemon-card"
           >
-            {anime.imageUrl && (
+            {anime.image && (
               <img
-                src={`${API_URL}${anime.imageUrl}`}
+                src={`${API_URL}${anime.image}`}
                 alt={anime.title}
               />
             )}
             <h2>{anime.title}</h2>
-            {anime.studio?.name && (
-              <p>Studio: <strong>{anime.studio.name}</strong></p>
+            {anime.studio && (
+              <p>Studio: <strong>{anime.studio}</strong></p>
             )}
           </Link>
         ))}

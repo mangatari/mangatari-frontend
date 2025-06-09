@@ -9,13 +9,18 @@ import "./App.css";
 const API_URL = import.meta.env.VITE_API_URL;
 
 interface Manga {
-  _id: string;
-  title: string;
-  description: string;
-  imageUrl?: string;
-  studio?: {
-    name: string;
-  };
+    rating: number;
+    image: string;
+    title: string;
+    genre: string;
+    year: number;
+    chapters: number;
+    author: string;
+    description: string;
+    volumes?: number;
+    status?: string;
+    [key: string]: any;
+
 }
 
 function MangaList() {
@@ -77,20 +82,17 @@ function MangaList() {
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: "1.5rem" }}>
         {mangas.map((manga) => (
           <Link
-            key={manga._id}
-            to={`/mangas/${manga._id}`}
+            key={manga.id}
+            to={`/mangas/${manga.id}`}
             className="pokemon-card"
           >
-            {manga.imageUrl && (
+            {manga.image && (
               <img
-                src={`${API_URL}${manga.imageUrl}`}
+                src={`${API_URL}${manga.image}`}
                 alt={manga.title}
               />
             )}
             <h2>{manga.title}</h2>
-            {manga.studio?.name && (
-              <p>Studio: <strong>{manga.studio.name}</strong></p>
-            )}
           </Link>
         ))}
       </div>
