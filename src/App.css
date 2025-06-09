@@ -260,3 +260,37 @@ body {
   color: #c62828;
   font-size: 0.55rem;
 }
+
+.pokemon-menu-link {
+  position: relative;
+  font-family: var(--pixel-font);
+  font-size: 1rem;
+  padding: 4px 8px;
+  color: var(--text-main);
+  text-decoration: none;
+  transition: all 0.2s ease-in-out;
+}
+
+.pokemon-menu-link::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  top: -1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: var(--tooltip-bg, #000);
+  color: var(--tooltip-text, #fff);
+  padding: 2px 6px;
+  font-size: 0.6rem;
+  border: 1px solid var(--tooltip-border, #555);
+  border-radius: 2px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+  font-family: var(--pixel-font);
+  z-index: 10;
+}
+
+.pokemon-menu-link:hover::after {
+  opacity: 1;
+}

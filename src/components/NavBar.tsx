@@ -1,11 +1,11 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-import "../App.css"; // make sure this is imported
+import "../App.css";
 
 function Navbar() {
   const handleLogout = () => {
     localStorage.removeItem("authToken");
-    window.location.href = "/login"; // or your desired logout behavior
+    window.location.href = "/login";
   };
 
   return (
@@ -16,29 +16,35 @@ function Navbar() {
       <div className="pokemon-navbar-links">
         <NavLink
           to="/mangalist"
-          className={({ isActive }) => (isActive ? "active" : "")}
+          data-tooltip="Manga"
+          className={({ isActive }) => `pokemon-menu-link ${isActive ? "active" : ""}`}
         >
-          Manga
+          漫画
         </NavLink>
         <NavLink
           to="/animelist"
-          className={({ isActive }) => (isActive ? "active" : "")}
+          data-tooltip="Anime"
+          className={({ isActive }) => `pokemon-menu-link ${isActive ? "active" : ""}`}
         >
-          Anime
+          アニメ
         </NavLink>
         <NavLink
           to="/signup"
-          className={({ isActive }) => (isActive ? "active" : "")}
+          data-tooltip="Sign up"
+          className={({ isActive }) => `pokemon-menu-link ${isActive ? "active" : ""}`}
         >
-          Sign up
+          登録
         </NavLink>
         <NavLink
           to="/login"
-          className={({ isActive }) => (isActive ? "active" : "")}
+          data-tooltip="Login"
+          className={({ isActive }) => `pokemon-menu-link ${isActive ? "active" : ""}`}
         >
-          Login
+          ログイン
         </NavLink>
-        <button onClick={handleLogout}>Logout</button>
+        <button onClick={handleLogout} className="pokemon-menu-link" data-tooltip="Logout">
+          ログアウト
+        </button>
       </div>
     </nav>
   );
