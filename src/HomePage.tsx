@@ -118,7 +118,7 @@ function HomePage() {
           userSelect: 'none',
         }}
       >
-        <h1 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>MANGATARI</h1>
+        <h1 className='round' style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>漫語</h1>
         <p style={{ fontSize: '0.8rem', lineHeight: 1.4 }}>
            Where anime & manga fans get updated!
           <br />

@@ -573,6 +573,13 @@ body {
     .square {
       font-family: square;
     }
+    @font-face{
+      font-family: round;
+      src: url(./assets/Nosutaru.ttf);
+    }
+    .round {
+      font-family: round;
+    }
 
     @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
