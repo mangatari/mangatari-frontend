@@ -29,6 +29,13 @@ function Navbar() {
           アニメ
         </NavLink>
         <NavLink
+          to="/about"
+          data-tooltip="About"
+          className={({ isActive }) => `pokemon-menu-link ${isActive ? "active" : ""}`}
+        >
+          情報
+        </NavLink>
+        <NavLink
           to="/signup"
           data-tooltip="Sign up"
           className={({ isActive }) => `pokemon-menu-link ${isActive ? "active" : ""}`}
