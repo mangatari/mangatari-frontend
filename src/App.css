@@ -628,3 +628,30 @@ body {
 .pixel-form button:hover {
   background-color: #60b060;
 }
+
+.hover-translate {
+  position: relative;
+  font-family: "round", monospace;
+  margin-bottom: 1rem;
+  height: 1.5em;
+}
+
+.hover-translate .jp {
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.hover-translate .en {
+  transition: opacity 0.3s ease;
+}
+
+.hover-translate:hover .en {
+  opacity: 0;
+}
+
+.hover-translate:hover .jp {
+  opacity: 1;
+}
