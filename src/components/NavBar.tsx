@@ -16,41 +16,41 @@ function Navbar() {
       <div className="pokemon-navbar-links">
         <NavLink
           to="/mangalist"
-          data-tooltip="Manga"
+          data-tooltip="漫画"
           className={({ isActive }) => `pokemon-menu-link ${isActive ? "active" : ""}`}
         >
-          漫画
+          Manga
         </NavLink>
         <NavLink
           to="/animelist"
-          data-tooltip="Anime"
+          data-tooltip="アニメ"
           className={({ isActive }) => `pokemon-menu-link ${isActive ? "active" : ""}`}
         >
-          アニメ
+          Anime
         </NavLink>
         <NavLink
           to="/about"
-          data-tooltip="About"
+          data-tooltip="情報"
           className={({ isActive }) => `pokemon-menu-link ${isActive ? "active" : ""}`}
         >
-          情報
+          About
         </NavLink>
         <NavLink
           to="/signup"
-          data-tooltip="Sign up"
+          data-tooltip="登録"
           className={({ isActive }) => `pokemon-menu-link ${isActive ? "active" : ""}`}
         >
-          登録
+          Sign up
         </NavLink>
         <NavLink
           to="/login"
-          data-tooltip="Login"
+          data-tooltip="ログイン"
           className={({ isActive }) => `pokemon-menu-link ${isActive ? "active" : ""}`}
         >
-          ログイン
+          Login
         </NavLink>
-        <button onClick={handleLogout} className="pokemon-menu-link" data-tooltip="Logout">
-          ログアウト
+        <button onClick={handleLogout} className="pokemon-menu-link" data-tooltip="ログアウト">
+          Logout
         </button>
       </div>
     </nav>
