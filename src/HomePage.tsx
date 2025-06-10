@@ -87,7 +87,7 @@ function HomePage() {
                 }}
               >
                 <img
-                  src={`${API_URL}${anime.image}`}
+                  src={anime.image}
                   alt={anime.title}
                   style={{
                     width: '100%',
