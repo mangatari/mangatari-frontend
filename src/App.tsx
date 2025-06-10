@@ -15,6 +15,7 @@ import AnimeEdit from './AnimeEdit';
 import MangaEdit from './MangaEdit';
 import MangaList from './MangaList';
 import About from './About';
+import MangaCreate from './pages/MangaCreate';
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
           <Route path="/animes/edit/:animeId" element={<AnimeEdit />} />
           <Route path="/mangas/:mangaId" element={<MangaDetails />} />
           <Route path="/mangas/edit/:mangaId" element={<MangaEdit />} />
+          <Route path="/mangas/create/" element={<MangaCreate />} />
           <Route path="/mangalist" element={<MangaList />} />
           <Route path="/about" element={<About />} />
       </Routes>
