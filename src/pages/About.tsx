@@ -1,9 +1,11 @@
 import React from "react";
+import "./App.css"; 
+
 
 function AboutPage() {
   return (
     <div style={{ padding: "2rem", maxWidth: "800px", margin: "0 auto" }}>
-      <h1>About Mangatari</h1>
+      <h1 className="pokemon-title">About Mangatari</h1>
       <p style={{ marginTop: "1rem" }}>
         <strong>Mangatari</strong> is a web platform dedicated to anime and manga enthusiasts. Whether you're looking to discover new series, track your favorites, or just explore what the world of Japanese storytelling has to offer — Mangatari is your companion.
       </p>
