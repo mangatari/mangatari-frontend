@@ -61,12 +61,8 @@ function AnimeDetails() {
   return (
     <div className="anime-container">
       <div className="anime-card">
-      {anime.image && (
-  <img 
-    src={`${API_URL}${anime.image}`}
-    alt={anime.title}
-    style={{ maxWidth: '100%', marginTop: '1rem' }}
-  />
+  {anime.image && (
+  <img src={`${API_URL}/${anime.image}`} alt="Anime" style={{ width: "200px", marginBottom: "1rem" }} />
 )}
 
         <div className="anime-info">
