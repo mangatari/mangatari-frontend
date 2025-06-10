@@ -76,7 +76,7 @@ function MangaList() {
       <h1 className="pokemon-title">All Mangas</h1>
 
       <div style={{ textAlign: "center", marginBottom: "2rem" }}>
-        <Link to="/mangas/create" className="pokemon-button">Create New Manga</Link>
+        <Link to="/mangas/create" className="pokemon-button">Add New Manga</Link>
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: "1.5rem" }}>
