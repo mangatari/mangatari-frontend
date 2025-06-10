@@ -58,10 +58,10 @@ function HomePage() {
       {/* Anime Carousel */}
       <div style={{ flex: 1, minWidth: 0 }}>
         <h2
-          className="square"
-          style={{ marginBottom: '1rem', fontFamily: '"Press Start 2P", monospace' }}
+          className="round"
+          style={{ marginBottom: '1rem', fontFamily: '"round", monospace' }}
         >
-          Featured Animes
+          注目のアニメ
         </h2>
         <Carousel
           withIndicators
@@ -130,10 +130,10 @@ function HomePage() {
       {/* Manga Carousel */}
       <div style={{ flex: 1, minWidth: 0 }}>
         <h2
-          className="square"
-          style={{ marginBottom: '1rem', fontFamily: '"Press Start 2P", monospace' }}
+          className="round"
+          style={{ marginBottom: '1rem', fontFamily: '"round", monospace' }}
         >
-          Featured Mangas
+          注目の漫画
         </h2>
         <Carousel
           withIndicators
