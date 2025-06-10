@@ -2,7 +2,7 @@ import { useState } from "react";
 import type { FormEvent, ChangeEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import "./App.css"; 
+import "../App.css"; 
 
 
 const API_URL = import.meta.env.VITE_API_URL;

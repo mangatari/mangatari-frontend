@@ -1,22 +1,22 @@
 import { useState } from 'react'
 import './App.css'
-import Navbar from './src/components/NavBar'
-import Footer from './src/components/Footer'
+import Navbar from './components/NavBar'
+import Footer from './components/Footer'
 import 'react-toastify/dist/ReactToastify.css';
 import '@mantine/core/styles.css';
 import '@mantine/carousel/styles.css';
 import { Route, Routes } from 'react-router';
-import HomePage from './src/pages/HomePage';
-import LoginPage from './src/pages/LoginPage';
-import SignupPage from './src/pages/SignupPage';
-import AnimeDetails from './src/pages/AnimeDetails'
-import MangaDetails from './src/pages/MangaDetails'
-import AnimeList from './src/pages/AnimeList';
-import AnimeEdit from './src/pages/AnimeEdit';
-import MangaEdit from './src/pages/MangaEdit';
-import MangaList from './src/pages/MangaList';
-import About from './src/pages/About';
-import MangaCreate from './src/pages/MangaCreate';
+import HomePage from './pages/HomePage';
+import LoginPage from './pages/LoginPage';
+import SignupPage from './pages/SignupPage';
+import AnimeDetails from './pages/AnimeDetails'
+import MangaDetails from './pages/MangaDetails'
+import AnimeList from './pages/AnimeList';
+import AnimeEdit from './pages/AnimeEdit';
+import MangaEdit from './pages/MangaEdit';
+import MangaList from './pages/MangaList';
+import About from './pages/About';
+import MangaCreate from './pages/MangaCreate';
 
 function App() {
   return (
