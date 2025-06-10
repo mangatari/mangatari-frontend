@@ -1,6 +1,5 @@
-import React from "react";
 import { NavLink } from "react-router-dom";
-import "../pages/App.css";
+import "../App.css";
 
 function Navbar() {
   const handleLogout = () => {
