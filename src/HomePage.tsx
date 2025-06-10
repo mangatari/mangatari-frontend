@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Carousel } from "@mantine/carousel";
+import Autoplay from "embla-carousel-autoplay";
 import axios from "axios";
 import { Link } from "react-router-dom";
-
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -22,8 +22,9 @@ function HomePage() {
   const [animes, setAnimes] = useState<Anime[]>([]);
   const [mangas, setMangas] = useState<Manga[]>([]);
 
-  const [animeSlide, setAnimeSlide] = useState(0);
-  const [mangaSlide, setMangaSlide] = useState(0);
+  // Setup autoplay plugins separately for anime and manga carousels
+  const animeAutoplay = useRef(Autoplay({ delay: 3000 }));
+  const mangaAutoplay = useRef(Autoplay({ delay: 3000 }));
 
   useEffect(() => {
     const token = localStorage.getItem("authToken");
@@ -42,24 +43,6 @@ function HomePage() {
       .then((response) => setMangas(response.data))
       .catch((e) => console.error("Error fetching mangas:", e));
   }, []);
-
-  // Autoplay for Anime Carousel
-  useEffect(() => {
-    if (animes.length === 0) return;
-    const interval = setInterval(() => {
-      setAnimeSlide((current) => (current + 1) % animes.length);
-    }, 3000);
-    return () => clearInterval(interval);
-  }, [animes]);
-
-  // Autoplay for Manga Carousel
-  useEffect(() => {
-    if (mangas.length === 0) return;
-    const interval = setInterval(() => {
-      setMangaSlide((current) => (current + 1) % mangas.length);
-    }, 3000);
-    return () => clearInterval(interval);
-  }, [mangas]);
 
   return (
     <div
@@ -84,11 +67,11 @@ function HomePage() {
             slideSize="100%"
             height={280}
             slideGap={0}
-            loop
             align="start"
             withIndicators
-            active={animeSlide}
-            onSlideChange={setAnimeSlide}
+            plugins={[animeAutoplay.current]}
+            onMouseEnter={animeAutoplay.current.stop}
+            onMouseLeave={() => animeAutoplay.current.play()}
           >
             {animes.map((anime) => (
               <Carousel.Slide key={anime.id}>
@@ -141,10 +124,7 @@ function HomePage() {
           userSelect: "none",
         }}
       >
-        <h1
-          className="round"
-          style={{ fontSize: "1.5rem", marginBottom: "1rem" }}
-        >
+        <h1 className="round" style={{ fontSize: "1.5rem", marginBottom: "1rem" }}>
           漫語
         </h1>
         <p style={{ fontSize: "0.8rem", lineHeight: 1.4 }}>
@@ -165,11 +145,11 @@ function HomePage() {
             slideSize="100%"
             height={280}
             slideGap={0}
-            loop
             align="start"
             withIndicators
-            active={mangaSlide}
-            onSlideChange={setMangaSlide}
+            plugins={[mangaAutoplay.current]}
+            onMouseEnter={mangaAutoplay.current.stop}
+            onMouseLeave={() => mangaAutoplay.current.play()}
           >
             {mangas.map((manga) => (
               <Carousel.Slide key={manga.id}>
