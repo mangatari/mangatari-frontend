@@ -15,7 +15,7 @@ function MangaListPage() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:5005/api/mangas") // Make sure this matches your backend route
+      .get<Manga[]>("http://localhost:5005/api/mangas") // Make sure this matches your backend route
       .then((response) => {
         setMangas(response.data);
         setLoading(false);
