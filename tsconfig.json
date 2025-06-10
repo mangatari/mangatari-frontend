@@ -24,6 +24,6 @@
     /* Allow JavaScript files */
     "allowJs": true
   },
-  "include": ["src"],
+  "include": ["src", "main.tsx", "App.tsx"],
   "references": [{ "path": "./tsconfig.node.json" }, { "path": "./tsconfig.app.json" },]
 }
