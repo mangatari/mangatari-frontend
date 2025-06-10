@@ -91,7 +91,7 @@ function MangaEditPage() {
         },
       });
       localStorage.setItem("showToast", "Manga updated successfully!");
-      navigate(`/manga`);
+      navigate(`/mangalist`);
     } catch (err) {
       console.error(err);
     } finally {
@@ -107,7 +107,7 @@ function MangaEditPage() {
       })
       .then(() => {
         localStorage.setItem("showToast", "Manga deleted successfully!");
-        navigate("/manga");
+        navigate("/mangalist");
       })
       .catch((err) => console.error(err));
   };

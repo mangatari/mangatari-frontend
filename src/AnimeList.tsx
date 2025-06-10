@@ -83,19 +83,16 @@ function AnimeList() {
             key={anime.id}
             to={`/animes/${anime.id}`}
             className="pokemon-card"
-          >
-            {anime.image && (
-              <img
-                src={anime.image}
-                alt={anime.title}
-              />
-            )}
-            <h2>{anime.title}</h2>
-            {anime.studio && (
-              <p>Studio: <strong>{anime.studio}</strong></p>
-            )}
-          </Link>
-        ))}
+  >
+    {anime.image && (
+      <img src={`${API_URL}/${anime.image}`} alt="Anime" style={{ width: "200px", marginBottom: "1rem" }} />
+    )}
+    <h2>{anime.title}</h2>
+    {anime.studio && (
+      <p>Studio: <strong>{anime.studio}</strong></p>
+    )}
+  </Link>
+))}
       </div>
     </div>
   );
