@@ -61,22 +61,26 @@ function AnimeDetails() {
   return (
     <div className="anime-container">
       <div className="anime-card">
-  {anime.image && (
-  <img src={`${API_URL}/${anime.image}`} alt="Anime" style={{ width: "200px", marginBottom: "1rem" }} />
-)}
+        {anime.image && (
+          <img
+            src={`${anime.image}`}
+            alt="Anime"
+            className="anime-image"
+          />
+        )}
 
         <div className="anime-info">
-          <h2 className="square">{anime.title}</h2>
+          <h2 className="anime-title">{anime.title}</h2>
 
-          <p><strong className="square">Genre:</strong> {anime.genre ?? "N/A"}</p>
-          <p><strong className="square">Year:</strong> {anime.year ?? "N/A"}</p>
-          <p><strong className="square">Studio:</strong> {anime.studio ?? "N/A"}</p>
-          <p><strong className="square">Status:</strong> {anime.status ?? "N/A"}</p>
-          <p><strong className="square">Episodes:</strong> {anime.episodes ?? "N/A"}</p>
+          <p><strong>Genre:</strong> {anime.genre ?? "N/A"}</p>
+          <p><strong>Year:</strong> {anime.year ?? "N/A"}</p>
+          <p><strong>Studio:</strong> {anime.studio ?? "N/A"}</p>
+          <p><strong>Status:</strong> {anime.status ?? "N/A"}</p>
+          <p><strong>Episodes:</strong> {anime.episodes ?? "N/A"}</p>
           <p className="anime-description">{anime.description ?? "No description available."}</p>
 
           <div className="rating-section">
-            <p><strong className="square">Your Rating:</strong></p>
+            <p><strong>Your Rating:</strong></p>
             <Rating
               value={anime.rating ? anime.rating / 2 : 0}
               onChange={handleRatingChange}
@@ -103,40 +107,39 @@ function AnimeDetails() {
           padding: 20px;
           max-width: 900px;
           margin: 0 auto;
-          font-family: Arial, sans-serif;
+          font-family: "Press Start 2P", monospace;
           color: #222;
+          text-align: center;
         }
 
         .anime-card {
           display: flex;
+          flex-direction: column;
+          align-items: center;
           gap: 24px;
-          align-items: flex-start;
           background: #f9f9f9;
           border-radius: 12px;
           padding: 24px;
           box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-          flex-wrap: wrap;
         }
 
         .anime-image {
-          width: 280px;
+          width: 500px;
           height: auto;
           border-radius: 12px;
           object-fit: cover;
-          flex-shrink: 0;
           box-shadow: 0 2px 8px rgba(0,0,0,0.15);
         }
 
         .anime-info {
-          flex: 1;
-          font-size: 1.15rem;
+          max-width: 600px;
+          font-size: 1rem;
           line-height: 1.6;
-          min-width: 280px;
         }
 
         .anime-title {
-          font-size: 2.5rem;
-          margin-bottom: 20px;
+          font-size: 1.5rem;
+          margin-bottom: 16px;
           font-weight: 700;
         }
 
@@ -163,10 +166,13 @@ function AnimeDetails() {
 
         .back-link-container {
           margin-top: 32px;
+          display: flex;
+          justify-content: center;
+          gap: 2rem;
         }
 
         .back-link {
-          font-size: 1.1rem;
+          font-size: 1rem;
           text-decoration: none;
           color: #6b21a8;
           font-weight: 600;
@@ -182,28 +188,21 @@ function AnimeDetails() {
           text-align: center;
           margin-top: 60px;
           color: #666;
+          font-family: "Press Start 2P", monospace;
         }
 
         @media (max-width: 700px) {
-          .anime-card {
-            flex-direction: column;
-            padding: 16px;
-          }
-
           .anime-image {
             width: 100%;
-            max-height: 400px;
-            border-radius: 10px;
-            margin-bottom: 20px;
+            max-width: 400px;
           }
 
           .anime-info {
-            min-width: auto;
-            font-size: 1.1rem;
+            font-size: 0.9rem;
           }
 
           .anime-title {
-            font-size: 2rem;
+            font-size: 1.2rem;
             margin-bottom: 12px;
           }
         }
