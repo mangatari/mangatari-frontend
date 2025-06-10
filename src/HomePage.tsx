@@ -2,8 +2,7 @@ import { useEffect, useState } from "react";
 import { Carousel } from "@mantine/carousel";
 import axios from "axios";
 import { Link } from "react-router-dom";
-import '@mantine/core/styles.css';
-import '@mantine/carousel/styles.css';
+
 
 const API_URL = import.meta.env.VITE_API_URL;
 
