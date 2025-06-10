@@ -85,7 +85,7 @@ function AnimeList() {
             className="pokemon-card"
   >
     {anime.image && (
-      <img src={`${API_URL}/${anime.image}`} alt="Anime" style={{ width: "200px", marginBottom: "1rem" }} />
+      <img src={`${anime.image}`} alt="Anime" style={{ width: "200px", marginBottom: "1rem" }} />
     )}
     <h2>{anime.title}</h2>
     {anime.studio && (
