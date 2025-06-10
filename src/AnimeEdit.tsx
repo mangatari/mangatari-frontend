@@ -87,7 +87,7 @@ function AnimeEdit() {
         },
       });
       localStorage.setItem("showToast", "Anime updated successfully!");
-      navigate(`/anime`);
+      navigate(`/animelist`);
     } catch (err) {
       console.error(err);
     } finally {
@@ -103,7 +103,7 @@ function AnimeEdit() {
       })
       .then(() => {
         localStorage.setItem("showToast", "Anime deleted successfully!");
-        navigate("/anime");
+        navigate("/animelist");
       })
       .catch((err) => console.error(err));
   };
@@ -186,11 +186,22 @@ function AnimeEdit() {
           </Group>
         </Dropzone>
 
-        {imageFile && (
-          <Text size="sm" mt="sm">
-            Selected image: {imageFile.name}
-          </Text>
-        )}
+        {image && !imageFile && (
+      <div style={{ marginTop: '1rem' }}>
+        <Text size="sm">Current image:</Text>
+        <img 
+          src={`${API_URL}${image}`} 
+          alt="Current anime" 
+          style={{ maxWidth: '200px', marginTop: '0.5rem' }}
+        />
+      </div>
+    )}
+
+    {imageFile && (
+      <Text size="sm" mt="sm">
+        Selected image: {imageFile.name}
+      </Text>
+    )}
 
         <button type="submit" disabled={isSubmitting} style={{ marginTop: "1rem" }}>
           {isSubmitting ? "Updating..." : "Update Anime"}
