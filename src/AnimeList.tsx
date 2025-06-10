@@ -86,7 +86,7 @@ function AnimeList() {
           >
             {anime.image && (
               <img
-                src={`${API_URL}${anime.image}`}
+                src={anime.image}
                 alt={anime.title}
               />
             )}
