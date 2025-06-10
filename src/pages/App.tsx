@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import './App.css'
-import Navbar from './components/NavBar'
-import Footer from './components/Footer'
+import Navbar from '../components/NavBar'
+import Footer from '../components/Footer'
 import 'react-toastify/dist/ReactToastify.css';
 import '@mantine/core/styles.css';
 import '@mantine/carousel/styles.css';
@@ -16,7 +16,7 @@ import AnimeEdit from './AnimeEdit';
 import MangaEdit from './MangaEdit';
 import MangaList from './MangaList';
 import About from './About';
-import MangaCreate from './pages/MangaCreate';
+import MangaCreate from './MangaCreate';
 
 function App() {
   return (
