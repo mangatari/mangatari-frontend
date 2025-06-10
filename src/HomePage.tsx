@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { Carousel } from "@mantine/carousel";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import '@mantine/core/styles.css';
+import '@mantine/carousel/styles.css';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -47,7 +49,7 @@ function HomePage() {
     if (animes.length === 0) return;
     const interval = setInterval(() => {
       setAnimeSlide((current) => (current + 1) % animes.length);
-    }, 3000); // every 3 seconds
+    }, 3000);
     return () => clearInterval(interval);
   }, [animes]);
 
@@ -56,7 +58,7 @@ function HomePage() {
     if (mangas.length === 0) return;
     const interval = setInterval(() => {
       setMangaSlide((current) => (current + 1) % mangas.length);
-    }, 3000); // every 3 seconds
+    }, 3000);
     return () => clearInterval(interval);
   }, [mangas]);
 
@@ -73,55 +75,57 @@ function HomePage() {
       }}
     >
       {/* Anime Carousel */}
-      <div style={{ flex: 1, minWidth: 0 }}>
+      <div style={{ flex: "1 1 400px", minWidth: "300px" }}>
         <h2 className="hover-translate" style={{ marginBottom: "1rem" }}>
           <span className="en">Featured Anime</span>
           <span className="jp">注目のアニメ</span>
         </h2>
-        <Carousel
-          slideSize="100%"
-          height={280}
-          slideGap={0}
-          loop
-          align="start"
-          withIndicators
-          active={animeSlide}
-          onSlideChange={setAnimeSlide}
-        >
-          {animes.map((anime) => (
-            <Carousel.Slide key={anime.id}>
-              <Link
-                to={`/animes/${anime.id}`}
-                style={{
-                  backgroundColor: "#88c070",
-                  padding: "0.5rem",
-                  display: "block",
-                  border: "4px solid #304030",
-                  borderRadius: "8px",
-                  textDecoration: "none",
-                  color: "#000",
-                  fontFamily: '"Press Start 2P", monospace',
-                  fontSize: "0.75rem",
-                }}
-              >
-                <img
-                  src={anime.image}
-                  alt={anime.title}
+        <div style={{ width: "100%", maxWidth: "400px" }}>
+          <Carousel
+            slideSize="100%"
+            height={280}
+            slideGap={0}
+            loop
+            align="start"
+            withIndicators
+            active={animeSlide}
+            onSlideChange={setAnimeSlide}
+          >
+            {animes.map((anime) => (
+              <Carousel.Slide key={anime.id}>
+                <Link
+                  to={`/animes/${anime.id}`}
                   style={{
-                    width: "100%",
-                    height: "200px",
-                    objectFit: "cover",
-                    borderRadius: "12px",
-                    imageRendering: "pixelated",
+                    backgroundColor: "#88c070",
+                    padding: "0.5rem",
+                    display: "block",
+                    border: "4px solid #304030",
+                    borderRadius: "8px",
+                    textDecoration: "none",
+                    color: "#000",
+                    fontFamily: '"Press Start 2P", monospace',
+                    fontSize: "0.75rem",
                   }}
-                />
-                <h3 style={{ textAlign: "center", marginTop: "0.5rem" }}>
-                  {anime.title}
-                </h3>
-              </Link>
-            </Carousel.Slide>
-          ))}
-        </Carousel>
+                >
+                  <img
+                    src={anime.image}
+                    alt={anime.title}
+                    style={{
+                      width: "100%",
+                      height: "200px",
+                      objectFit: "cover",
+                      borderRadius: "12px",
+                      imageRendering: "pixelated",
+                    }}
+                  />
+                  <h3 style={{ textAlign: "center", marginTop: "0.5rem" }}>
+                    {anime.title}
+                  </h3>
+                </Link>
+              </Carousel.Slide>
+            ))}
+          </Carousel>
+        </div>
       </div>
 
       {/* Center Feature Section */}
@@ -152,55 +156,57 @@ function HomePage() {
       </div>
 
       {/* Manga Carousel */}
-      <div style={{ flex: 1, minWidth: 0 }}>
+      <div style={{ flex: "1 1 400px", minWidth: "300px" }}>
         <h2 className="hover-translate" style={{ marginBottom: "1rem" }}>
           <span className="en">Featured Manga</span>
           <span className="jp">注目の漫画</span>
         </h2>
-        <Carousel
-          slideSize="100%"
-          height={280}
-          slideGap={0}
-          loop
-          align="start"
-          withIndicators
-          active={mangaSlide}
-          onSlideChange={setMangaSlide}
-        >
-          {mangas.map((manga) => (
-            <Carousel.Slide key={manga.id}>
-              <Link
-                to={`/mangas/${manga.id}`}
-                style={{
-                  backgroundColor: "#88c070",
-                  padding: "0.5rem",
-                  display: "block",
-                  border: "4px solid #304030",
-                  borderRadius: "8px",
-                  textDecoration: "none",
-                  color: "#000",
-                  fontFamily: '"Press Start 2P", monospace',
-                  fontSize: "0.75rem",
-                }}
-              >
-                <img
-                  src={manga.image}
-                  alt={manga.title}
+        <div style={{ width: "100%", maxWidth: "400px" }}>
+          <Carousel
+            slideSize="100%"
+            height={280}
+            slideGap={0}
+            loop
+            align="start"
+            withIndicators
+            active={mangaSlide}
+            onSlideChange={setMangaSlide}
+          >
+            {mangas.map((manga) => (
+              <Carousel.Slide key={manga.id}>
+                <Link
+                  to={`/mangas/${manga.id}`}
                   style={{
-                    width: "100%",
-                    height: "200px",
-                    objectFit: "cover",
-                    borderRadius: "12px",
-                    imageRendering: "pixelated",
+                    backgroundColor: "#88c070",
+                    padding: "0.5rem",
+                    display: "block",
+                    border: "4px solid #304030",
+                    borderRadius: "8px",
+                    textDecoration: "none",
+                    color: "#000",
+                    fontFamily: '"Press Start 2P", monospace',
+                    fontSize: "0.75rem",
                   }}
-                />
-                <h3 style={{ textAlign: "center", marginTop: "0.5rem" }}>
-                  {manga.title}
-                </h3>
-              </Link>
-            </Carousel.Slide>
-          ))}
-        </Carousel>
+                >
+                  <img
+                    src={manga.image}
+                    alt={manga.title}
+                    style={{
+                      width: "100%",
+                      height: "200px",
+                      objectFit: "cover",
+                      borderRadius: "12px",
+                      imageRendering: "pixelated",
+                    }}
+                  />
+                  <h3 style={{ textAlign: "center", marginTop: "0.5rem" }}>
+                    {manga.title}
+                  </h3>
+                </Link>
+              </Carousel.Slide>
+            ))}
+          </Carousel>
+        </div>
       </div>
     </div>
   );

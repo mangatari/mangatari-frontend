@@ -66,7 +66,7 @@ function AnimeList() {
   return (
     <div className="pokemon-container">
       <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "1rem" }}>
-        <div style={{ width: "300px" }}>
+        <div style={{ width: "300px" }}>HELLO!
           <SearchBar onChange={onChange} />
         </div>
       </div>

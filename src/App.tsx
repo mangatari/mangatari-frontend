@@ -4,6 +4,7 @@ import Navbar from './components/NavBar'
 import Footer from './components/Footer'
 import 'react-toastify/dist/ReactToastify.css';
 import '@mantine/core/styles.css';
+import '@mantine/carousel/styles.css';
 import { Route, Routes } from 'react-router';
 import HomePage from './HomePage';
 import LoginPage from './LoginPage';
