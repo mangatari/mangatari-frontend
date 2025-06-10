@@ -61,9 +61,9 @@ function AnimeDetails() {
   return (
     <div className="anime-container">
       <div className="anime-card">
-        {anime.image && (
-          <img src={anime.image} alt={anime.title} className="anime-image" />
-        )}
+  {anime.image && (
+  <img src={`${API_URL}/${anime.image}`} alt="Anime" style={{ width: "200px", marginBottom: "1rem" }} />
+)}
 
         <div className="anime-info">
           <h2 className="square">{anime.title}</h2>
@@ -90,6 +90,9 @@ function AnimeDetails() {
           <div className="back-link-container">
             <Link to="/animelist" className="back-link">
               &larr; Back to Anime
+            </Link>
+            <Link to={`/animes/edit/${animeId}`} className="back-link">
+              &larr; Edit Manga
             </Link>
           </div>
         </div>

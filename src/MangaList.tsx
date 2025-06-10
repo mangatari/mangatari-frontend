@@ -88,7 +88,7 @@ function MangaList() {
           >
             {manga.image && (
               <img
-                src={`${API_URL}${manga.image}`}
+                src={manga.image}
                 alt={manga.title}
               />
             )}
