@@ -67,6 +67,7 @@ function HomePage() {
             slideSize="100%"
             height={280}
             slideGap={0}
+            // @ts-ignore
             align="start"
             withIndicators
             plugins={[animeAutoplay.current]}
@@ -145,6 +146,7 @@ function HomePage() {
             slideSize="100%"
             height={280}
             slideGap={0}
+            // @ts-ignore
             align="start"
             withIndicators
             plugins={[mangaAutoplay.current]}

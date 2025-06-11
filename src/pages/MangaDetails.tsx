@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Rating } from "@mantine/core";
 
@@ -63,22 +63,40 @@ function MangaDetails() {
     <div className="anime-container">
       <div className="anime-card">
         {manga.image && (
-          <img src={manga.image} alt={manga.title} className="anime-image" />
+          <img
+            src={manga.image}
+            alt={manga.title}
+            style={{ width: "500px", marginBottom: "1rem", borderRadius: "12px", objectFit: "cover", imageRendering: "pixelated" }}
+          />
         )}
 
         <div className="anime-info">
           <h2 className="square">{manga.title}</h2>
 
-          <p><strong className="square">Genre:</strong> {manga.genre ?? "N/A"}</p>
-          <p><strong className="square">Year:</strong> {manga.year ?? "N/A"}</p>
-          <p><strong className="square">Author:</strong> {manga.author ?? "N/A"}</p>
-          <p><strong className="square">Status:</strong> {manga.status ?? "N/A"}</p>
-          <p><strong className="square">Volumes:</strong> {manga.volumes ?? "N/A"}</p>
-          <p><strong className="square">Chapters:</strong> {manga.chapters ?? "N/A"}</p>
+          <p>
+            <strong className="square">Genre:</strong> {manga.genre ?? "N/A"}
+          </p>
+          <p>
+            <strong className="square">Year:</strong> {manga.year ?? "N/A"}
+          </p>
+          <p>
+            <strong className="square">Author:</strong> {manga.author ?? "N/A"}
+          </p>
+          <p>
+            <strong className="square">Status:</strong> {manga.status ?? "N/A"}
+          </p>
+          <p>
+            <strong className="square">Volumes:</strong> {manga.volumes ?? "N/A"}
+          </p>
+          <p>
+            <strong className="square">Chapters:</strong> {manga.chapters ?? "N/A"}
+          </p>
           <p className="anime-description">{manga.description ?? "No description available."}</p>
 
           <div className="rating-section">
-            <p><strong className="square">Your Rating:</strong></p>
+            <p>
+              <strong className="square">Your Rating:</strong>
+            </p>
             <Rating
               value={manga.rating ? manga.rating / 2 : 0}
               onChange={handleRatingChange}
@@ -105,28 +123,24 @@ function MangaDetails() {
           padding: 20px;
           max-width: 900px;
           margin: 0 auto;
-          font-family: Arial, sans-serif;
+          font-family: "Press Start 2P", monospace;
           color: #222;
         }
 
         .anime-card {
           display: flex;
           gap: 24px;
-          align-items: flex-start;
+          align-items: center; /* Center vertically */
           background: #f9f9f9;
           border-radius: 12px;
           padding: 24px;
           box-shadow: 0 4px 12px rgba(0,0,0,0.1);
           flex-wrap: wrap;
+          justify-content: center; /* Center horizontally if wrapped */
         }
 
-        .anime-image {
-          width: 280px;
-          height: auto;
-          border-radius: 12px;
-          object-fit: cover;
+        img {
           flex-shrink: 0;
-          box-shadow: 0 2px 8px rgba(0,0,0,0.15);
         }
 
         .anime-info {
@@ -134,26 +148,35 @@ function MangaDetails() {
           font-size: 1.15rem;
           line-height: 1.6;
           min-width: 280px;
+          display: flex;
+          flex-direction: column;
+          justify-content: center; /* Vertically center text content */
         }
 
-        .anime-title {
-          font-size: 2.5rem;
-          margin-bottom: 20px;
+        h2.square {
+          font-size: 2rem;
+          margin-bottom: 1rem;
           font-weight: 700;
+          text-align: center;
         }
 
         .anime-info p {
           margin: 8px 0;
+          text-align: center;
         }
 
         .anime-description {
           margin-top: 16px;
           font-style: italic;
           color: #555;
+          text-align: center;
         }
 
         .rating-section {
           margin-top: 24px;
+          display: flex;
+          flex-direction: column;
+          align-items: center; /* Center the stars */
         }
 
         .rating-value {
@@ -165,6 +188,10 @@ function MangaDetails() {
 
         .back-link-container {
           margin-top: 32px;
+          display: flex;
+          justify-content: center;
+          gap: 1.5rem;
+          flex-wrap: wrap;
         }
 
         .back-link {
@@ -190,9 +217,10 @@ function MangaDetails() {
           .anime-card {
             flex-direction: column;
             padding: 16px;
+            align-items: center;
           }
 
-          .anime-image {
+          img {
             width: 100%;
             max-height: 400px;
             border-radius: 10px;
@@ -204,8 +232,8 @@ function MangaDetails() {
             font-size: 1.1rem;
           }
 
-          .anime-title {
-            font-size: 2rem;
+          h2.square {
+            font-size: 1.5rem;
             margin-bottom: 12px;
           }
         }
