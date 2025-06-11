@@ -1,7 +1,7 @@
 import React from "react";
-import "../App.css";
 
-function AboutPage() {
+
+function AboutPage(): JSX.Element {
   return (
     <div className="pixel-box" style={{ padding: "2rem", maxWidth: "800px", margin: "2rem auto" }}>
       <h1 className="pokemon-title">About Mangatari</h1>
