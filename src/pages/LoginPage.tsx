@@ -11,6 +11,7 @@ function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
+  const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
 
@@ -35,11 +36,24 @@ function LoginPage() {
         const data = response.data as { authToken: string };
         storeToken(data.authToken);
         authenticateUser();
-        navigate("/events");
+        navigate("/");
       })
       .catch((error) => {
-        const errorDescription = error.response?.data?.message || "An error occurred";
+        const status = error.response?.status;
+        let errorDescription = "An error occurred";
+        
+        if (status === 401) {
+          errorDescription = "Invalid email or password";
+        } else if (status === 500) {
+          errorDescription = "Server error. Please try again later.";
+        } else if (error.response?.data?.message) {
+          errorDescription = error.response.data.message;
+        }
+        
         setErrorMessage(errorDescription);
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
   };
 
