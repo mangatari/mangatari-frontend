@@ -655,3 +655,38 @@ body {
 .hover-translate:hover .jp {
   opacity: 1;
 }
+
+.pixel-box {
+  border: 4px solid var(--pixel-yellow);
+  background: var(--background-dark);
+  box-shadow: 0 0 0 4px var(--pixel-outline);
+  border-radius: 8px;
+  padding: 2rem;
+}
+
+.pixel-text {
+  font-family: var(--pixel-font);
+  color: var(--pixel-white);
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+.section-heading {
+  color: var(--pixel-green);
+  font-size: 1.4rem;
+  font-family: var(--pixel-font);
+  margin-bottom: 0.5rem;
+}
+
+.team-list {
+  list-style-type: "✨ ";
+  padding-left: 1rem;
+}
+
+.mission-box {
+  border-left: 4px solid var(--pixel-green);
+  padding-left: 1rem;
+  background: rgba(0, 0, 0, 0.3);
+  margin-top: 0.5rem;
+  border-radius: 4px;
+}
