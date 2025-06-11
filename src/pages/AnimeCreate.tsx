@@ -106,9 +106,9 @@ function AnimeCreate() {
           type="number"
           min={0}
           max={10}
-          step={0.1}
+          step={1}
           value={rating}
-          onChange={(e) => setRating(parseFloat(e.target.value))}
+          onChange={(e) => setRating(parseInt(e.target.value, 10))}
         />
 
         <label>Genre:</label>
