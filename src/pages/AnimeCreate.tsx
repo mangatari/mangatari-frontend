@@ -45,7 +45,7 @@ function AnimeCreate() {
     }
 
     try {
-      const response = await axios.post(`${API_URL}/api/animes`, formData, {
+      await axios.post(`${API_URL}/api/animes`, formData, {
         headers: {
           Authorization: token ? `Bearer ${token}` : "",
           "Content-Type": "multipart/form-data",
