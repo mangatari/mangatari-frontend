@@ -61,11 +61,21 @@ function AnimeDetails() {
   return (
     <div className="anime-container">
       <div className="anime-card">
+      <div>
         {anime.image && (
           <img
-            src={`${anime.image}`}
+            src={`${API_URL}${anime.image.startsWith('/') ? '' : '/'}${anime.image}`}
             alt="Anime"
-            className="anime-image"
+            style={{ width: "200px", marginBottom: "1rem" }}
+            onError={(e) => {
+              console.error("Error loading image:", {
+                src: e.currentTarget.src,
+                apiUrl: API_URL,
+                imagePath: anime.image,
+                fullUrl: `${API_URL}${anime.image}`
+              });
+              e.currentTarget.style.display = 'none';
+            }}
           />
         )}
 
@@ -100,6 +110,7 @@ function AnimeDetails() {
             </Link>
           </div>
         </div>
+      </div>
       </div>
 
       <style>{`

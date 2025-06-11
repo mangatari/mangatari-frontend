@@ -4,21 +4,21 @@ import type { ChangeEvent } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import SearchBar from "../components/SearchBar";
-import "../App.css"; 
+import "../App.css";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 interface Anime {
   id: number;
-  title:      string;
+  title: string;
   description: string;
-  year:        number;
-  episodes:    number;
-  studio:      string;
-  rating:      number;
-  genre:       string;
-  status:      string;
-  image:       string;
+  year: number;
+  episodes: number;
+  studio: string;
+  rating: number;
+  genre: string;
+  status: string;
+  image: string;
 };
 
 function AnimeList() {
@@ -83,16 +83,29 @@ function AnimeList() {
             key={anime.id}
             to={`/animes/${anime.id}`}
             className="pokemon-card"
-  >
-    {anime.image && (
-      <img src={`${anime.image}`} alt="Anime" style={{ width: "200px", marginBottom: "1rem" }} />
-    )}
-    <h2>{anime.title}</h2>
-    {anime.studio && (
-      <p>Studio: <strong>{anime.studio}</strong></p>
-    )}
-  </Link>
-))}
+          >
+            {anime.image && (
+              <img
+                src={`${API_URL}${anime.image.startsWith('/') ? '' : '/'}${anime.image}`}
+                alt="Anime"
+                style={{ width: "200px", marginBottom: "1rem" }}
+                onError={(e) => {
+                  console.error("Error loading image:", {
+                    src: e.currentTarget.src,
+                    apiUrl: API_URL,
+                    imagePath: anime.image,
+                    fullUrl: `${API_URL}${anime.image}`
+                  });
+                  e.currentTarget.style.display = 'none';
+                }}
+              />
+            )}
+            <h2>{anime.title}</h2>
+            {anime.studio && (
+              <p>Studio: <strong>{anime.studio}</strong></p>
+            )}
+          </Link>
+        ))}
       </div>
     </div>
   );
