@@ -1,30 +1,32 @@
-import React from "react";
-import "../App.css"; 
 
+import type { JSX } from 'react';
 
-function AboutPage() {
+function AboutPage(): JSX.Element {
   return (
-    <div style={{ padding: "2rem", maxWidth: "800px", margin: "0 auto" }}>
+    <div className="pixel-box" style={{ padding: "2rem", maxWidth: "800px", margin: "2rem auto" }}>
       <h1 className="pokemon-title">About Mangatari</h1>
-      <p style={{ marginTop: "1rem" }}>
-        <strong>Mangatari</strong> is a web platform dedicated to anime and manga enthusiasts. Whether you're looking to discover new series, track your favorites, or just explore what the world of Japanese storytelling has to offer — Mangatari is your companion.
+
+      <p className="pixel-text" style={{ marginTop: "1rem" }}>
+        <strong>Mangatari</strong> is a nostalgic web portal crafted for anime and manga fans. Whether you're exploring classics or the latest gems, Mangatari is your pixel-perfect companion.
       </p>
 
-      <h2 style={{ marginTop: "2rem" }}>Our Mission</h2>
-      <p>
-        We built Mangatari to create a seamless and visually clean way to connect with anime and manga content. Our goal is to help fans manage their watchlists, explore recommendations, and celebrate the creativity of the medium.
-      </p>
+      <h2 className="section-heading" style={{ marginTop: "2rem" }}>🎯 Our Mission</h2>
+      <div className="mission-box">
+        <p className="pixel-text">
+          We aim to bring fans a clean, retro-inspired way to explore and track their favorite anime and manga. Mangatari is all about joy, discovery, and community.
+        </p>
+      </div>
 
-      <h2 style={{ marginTop: "2rem" }}>The Team</h2>
-      <ul>
-        <li><strong>Loop Troop</strong> – A dedicated group of developers from the Ironhack 2025 cohort.</li>
-        <li><strong>Frontend Developers:</strong> React wizards with a passion for clean design.</li>
-        <li><strong>Backend Developers:</strong> API architects making sure your data is fast, safe, and reliable.</li>
-        <li><strong>Design & UX:</strong> Crafted with user joy in mind.</li>
+      <h2 className="section-heading" style={{ marginTop: "2rem" }}>👾 The Team</h2>
+      <ul className="team-list pixel-text">
+        <li><strong>Loop Troop</strong> – Developers from Ironhack 2025 who level up together.</li>
+        <li><strong>Frontend:</strong> React warriors wielding pixel swords of design.</li>
+        <li><strong>Backend:</strong> API ninjas ensuring speed and security.</li>
+        <li><strong>UX & Design:</strong> Crafted to delight, 8-bit style.</li>
       </ul>
 
-      <p style={{ marginTop: "1rem" }}>
-        Built during the Ironhack 2025 Web Development Bootcamp, Mangatari is a collaborative project that reflects our team's love for both technology and storytelling.
+      <p className="pixel-text" style={{ marginTop: "1rem" }}>
+        This platform was born at the Ironhack 2025 Web Dev Bootcamp — where code meets creativity.
       </p>
     </div>
   );

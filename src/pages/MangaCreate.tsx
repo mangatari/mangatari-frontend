@@ -48,7 +48,7 @@ function MangaCreatePage() {
     }
 
     try {
-      const response = await axios.post(`${API_URL}/api/mangas`, formData, {
+      await axios.post(`${API_URL}/api/mangas`, formData, {
         headers: {
           Authorization: token ? `Bearer ${token}` : "",
           "Content-Type": "multipart/form-data",

@@ -1,67 +1,32 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import type { FormEvent } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone";
 import { IconUpload, IconPhoto, IconX } from "@tabler/icons-react";
 import { Group, Text } from "@mantine/core";
 
-
 const API_URL = import.meta.env.VITE_API_URL;
 
-interface Anime {
-  id: number;
-  title: string;
-  description?: string;
-  year?: number;
-  episodes?: number;
-  studio?: string;
-  rating?: number;
-  genre?: string;
-  status?: string;
-  image?: string;
-}
-
-function AnimeEdit() {
-  const { animeId } = useParams<{ animeId: string }>();
+function AnimeCreate() {
   const navigate = useNavigate();
 
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
-  const [year, setYear] = useState<number>(2024);
+  const [year, setYear] = useState<number>(new Date().getFullYear());
   const [episodes, setEpisodes] = useState<number>(0);
   const [studio, setStudio] = useState<string>("");
   const [rating, setRating] = useState<number>(0);
   const [genre, setGenre] = useState<string>("");
   const [status, setStatus] = useState<string>("Ongoing");
-  const [image, setImage] = useState<string>("");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-
-  useEffect(() => {
-    const token = localStorage.getItem("authToken");
-    axios
-      .get(`${API_URL}/api/animes/${animeId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((response) => {
-        const anime: Anime = response.data as Anime;
-        setTitle(anime.title);
-        setDescription(anime.description || "");
-        setYear(anime.year || 2024);
-        setEpisodes(anime.episodes || 0);
-        setStudio(anime.studio || "");
-        setRating(anime.rating || 0);
-        setGenre(anime.genre || "");
-        setStatus(anime.status || "Ongoing");
-        setImage(anime.image || "");
-      })
-      .catch((error) => console.log(error));
-  }, [animeId]);
+  const [error, setError] = useState<string | null>(null);
 
   const handleFormSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setError(null);
 
     const token = localStorage.getItem("authToken");
     const formData = new FormData();
@@ -80,50 +45,48 @@ function AnimeEdit() {
     }
 
     try {
-      await axios.put(`${API_URL}/api/animes/${animeId}`, formData, {
+      await axios.post(`${API_URL}/api/animes`, formData, {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: token ? `Bearer ${token}` : "",
           "Content-Type": "multipart/form-data",
         },
       });
-      localStorage.setItem("showToast", "Anime updated successfully!");
-      navigate(`/animelist`);
+      localStorage.setItem("showToast", "Anime created successfully!");
+      navigate('/animelist');
     } catch (err) {
       console.error(err);
+      setError("Failed to create anime. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const deleteAnime = () => {
-    const token = localStorage.getItem("authToken");
-    axios
-      .delete(`${API_URL}/api/animes/${animeId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then(() => {
-        localStorage.setItem("showToast", "Anime deleted successfully!");
-        navigate("/animelist");
-      })
-      .catch((err) => console.error(err));
-  };
-
   return (
     <div className="pixel-page">
-      <h3 className="pixel-titel">Edit the Anime</h3>
+      <h3 className="pixel-titel">Create a New Anime</h3>
 
       <form className="pixel-form" onSubmit={handleFormSubmit}>
         <label>Title:</label>
-        <input value={title} onChange={(e) => setTitle(e.target.value)} />
+        <input
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          required
+          autoFocus
+        />
 
         <label>Description:</label>
-        <textarea value={description} onChange={(e) => setDescription(e.target.value)} />
+        <textarea
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+        />
 
         <label>Year:</label>
         <input
           type="number"
           value={year}
           onChange={(e) => setYear(Number(e.target.value))}
+          min={1900}
+          max={new Date().getFullYear()}
         />
 
         <label>Episodes:</label>
@@ -131,19 +94,20 @@ function AnimeEdit() {
           type="number"
           value={episodes}
           onChange={(e) => setEpisodes(Number(e.target.value))}
+          min={0}
         />
 
         <label>Studio:</label>
         <input value={studio} onChange={(e) => setStudio(e.target.value)} />
 
-        <label>Rating (1–10):</label>
+        <label>Rating (0–10):</label>
         <input
           type="number"
-          min="0"
-          max="10"
-          step="1"
+          min={0}
+          max={10}
+          step={1}
           value={rating}
-          onChange={(e) => setRating(parseInt(e.target.value))}
+          onChange={(e) => setRating(parseInt(e.target.value, 10))}
         />
 
         <label>Genre:</label>
@@ -164,15 +128,32 @@ function AnimeEdit() {
           maxFiles={1}
           maxSize={5 * 1024 ** 2}
         >
-          <Group justify="center" gap="xl" mih={220} style={{ pointerEvents: "none" }}>
+          <Group
+            justify="center"
+            gap="xl"
+            mih={220}
+            style={{ pointerEvents: "none" }}
+          >
             <Dropzone.Accept>
-              <IconUpload size={52} color="var(--mantine-color-blue-6)" stroke={1.5} />
+              <IconUpload
+                size={52}
+                color="var(--mantine-color-blue-6)"
+                stroke={1.5}
+              />
             </Dropzone.Accept>
             <Dropzone.Reject>
-              <IconX size={52} color="var(--mantine-color-red-6)" stroke={1.5} />
+              <IconX
+                size={52}
+                color="var(--mantine-color-red-6)"
+                stroke={1.5}
+              />
             </Dropzone.Reject>
             <Dropzone.Idle>
-              <IconPhoto size={52} color="var(--mantine-color-dimmed)" stroke={1.5} />
+              <IconPhoto
+                size={52}
+                color="var(--mantine-color-dimmed)"
+                stroke={1.5}
+              />
             </Dropzone.Idle>
 
             <div>
@@ -186,32 +167,24 @@ function AnimeEdit() {
           </Group>
         </Dropzone>
 
-        {image && !imageFile && (
-      <div style={{ marginTop: '1rem' }}>
-        <Text size="sm">Current image:</Text>
-        <img 
-          src={`${API_URL}${image}`} 
-          alt="Current anime" 
-          style={{ maxWidth: '200px', marginTop: '0.5rem' }}
-        />
-      </div>
-    )}
+        {imageFile && (
+          <Text size="sm" mt="sm">
+            Selected image: {imageFile.name}
+          </Text>
+        )}
 
-    {imageFile && (
-      <Text size="sm" mt="sm">
-        Selected image: {imageFile.name}
-      </Text>
-    )}
+        {error && (
+          <p style={{ color: "red", marginTop: "1rem", fontWeight: "bold" }}>
+            {error}
+          </p>
+        )}
 
         <button type="submit" disabled={isSubmitting} style={{ marginTop: "1rem" }}>
-          {isSubmitting ? "Updating..." : "Update Anime"}
-        </button>
-        <button onClick={deleteAnime} style={{ marginTop: "1rem" }}>
-          Delete Anime
+          {isSubmitting ? "Creating..." : "Create Anime"}
         </button>
       </form>
     </div>
   );
 }
 
-export default AnimeEdit;
+export default AnimeCreate;

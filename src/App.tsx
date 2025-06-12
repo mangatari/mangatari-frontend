@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import './App.css'
 import Navbar from './components/NavBar'
 import Footer from './components/Footer'
@@ -19,6 +18,7 @@ import About from './pages/About';
 import MangaCreate from './pages/MangaCreate';
 import IsPrivate from './components/IsPrivate';
 import IsAnon from './components/IsAnon';
+import AnimeCreate from './pages/AnimeCreate';
 
 function App() {
   return (
@@ -38,6 +38,7 @@ function App() {
   <Route path="/mangalist" element={<IsPrivate><MangaList /></IsPrivate>} />
   <Route path="/mangas/edit/:mangaId" element={<IsPrivate><MangaEdit /></IsPrivate>} />
   <Route path="/mangas/create" element={<IsPrivate><MangaCreate /></IsPrivate>} />
+  <Route path="/animes/create" element={<IsPrivate><AnimeCreate /></IsPrivate>} />
   <Route path="/animes/:animeId" element={<IsPrivate><AnimeDetails /></IsPrivate>} />
   <Route path="/mangas/:mangaId" element={<IsPrivate><MangaDetails /></IsPrivate>} />
 </Routes>

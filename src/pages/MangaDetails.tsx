@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Rating } from "@mantine/core";
 
@@ -62,11 +62,20 @@ function MangaDetails() {
   return (
     <div className="anime-container">
       <div className="anime-card">
-        {manga.image && (
+      {manga.image && (
           <img
-            src={manga.image}
-            alt={manga.title}
-            style={{ width: "500px", marginBottom: "1rem", borderRadius: "12px", objectFit: "cover", imageRendering: "pixelated" }}
+            src={`${API_URL}${manga.image.startsWith('/') ? '' : '/'}${manga.image}`}
+            alt="Manga"
+            style={{ width: "200px", marginBottom: "1rem" }}
+            onError={(e) => {
+              console.error("Error loading image:", {
+                src: e.currentTarget.src,
+                apiUrl: API_URL,
+                imagePath: manga.image,
+                fullUrl: `${API_URL}${manga.image}`
+              });
+              e.currentTarget.style.display = 'none';
+            }}
           />
         )}
 

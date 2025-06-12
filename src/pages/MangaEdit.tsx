@@ -36,7 +36,7 @@ function MangaEditPage() {
   const [rating, setRating] = useState<number>(0);
   const [genre, setGenre] = useState<string>("");
   const [status, setStatus] = useState<string>("Ongoing");
-  const [image, setImage] = useState<string>("");
+  const [, setImage] = useState<string>("");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 

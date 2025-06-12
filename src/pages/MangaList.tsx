@@ -88,8 +88,18 @@ function MangaList() {
           >
             {manga.image && (
               <img
-                src={manga.image}
-                alt={manga.title}
+                src={`${API_URL}${manga.image.startsWith('/') ? '' : '/'}${manga.image}`}
+                alt="Manga"
+                style={{ width: "200px", marginBottom: "1rem" }}
+                onError={(e) => {
+                  console.error("Error loading image:", {
+                    src: e.currentTarget.src,
+                    apiUrl: API_URL,
+                    imagePath: manga.image,
+                    fullUrl: `${API_URL}${manga.image}`
+                  });
+                  e.currentTarget.style.display = 'none';
+                }}
               />
             )}
             <h2>{manga.title}</h2>

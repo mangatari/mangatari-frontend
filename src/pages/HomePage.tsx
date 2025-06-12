@@ -4,7 +4,7 @@ import Autoplay from "embla-carousel-autoplay";
 import axios from "axios";
 import { Link } from "react-router-dom";
 
-const API_URL = import.meta.env.VITE_API_URL;
+const VITE_API_URL = import.meta.env.VITE_API_URL;
 
 interface Anime {
   id: number;
@@ -26,20 +26,27 @@ function HomePage() {
   const animeAutoplay = useRef(Autoplay({ delay: 3000 }));
   const mangaAutoplay = useRef(Autoplay({ delay: 3000 }));
 
+  const fetchAnimes = async () => {
+    try {
+      const response = await fetch(`${VITE_API_URL}/api/animes`);
+      if (response.ok) {
+        const animesData = await response.json();
+        setAnimes(animesData);
+      } else {
+        throw new Error("Response not ok");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
-    const token = localStorage.getItem("authToken");
+
+
+    fetchAnimes();
 
     axios
-      .get<Anime[]>(`${API_URL}/api/animes`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((response) => setAnimes(response.data))
-      .catch((e) => console.error("Error fetching animes:", e));
-
-    axios
-      .get<Manga[]>(`${API_URL}/api/mangas`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+      .get<Manga[]>(`${VITE_API_URL}/api/mangas`)
       .then((response) => setMangas(response.data))
       .catch((e) => console.error("Error fetching mangas:", e));
   }, []);
@@ -91,7 +98,7 @@ function HomePage() {
                   }}
                 >
                   <img
-                    src={anime.image}
+                    src={`${VITE_API_URL}${anime.image.startsWith('/') ? '' : '/'}${anime.image}`}
                     alt={anime.title}
                     style={{
                       width: "100%",
@@ -99,6 +106,16 @@ function HomePage() {
                       objectFit: "cover",
                       borderRadius: "12px",
                       imageRendering: "pixelated",
+                    }}
+                    onError={(e) => {
+                      console.error("Error loading anime image:", {
+                        src: e.currentTarget.src,
+                        apiUrl: VITE_API_URL,
+                        imagePath: anime.image,
+                        fullUrl: `${VITE_API_URL}${anime.image}`
+                      });
+                      e.currentTarget.style.display = 'none';
+                      
                     }}
                   />
                   <h3 style={{ textAlign: "center", marginTop: "0.5rem" }}>
@@ -125,7 +142,10 @@ function HomePage() {
           userSelect: "none",
         }}
       >
-        <h1 className="round" style={{ fontSize: "1.5rem", marginBottom: "1rem" }}>
+        <h1
+          className="round"
+          style={{ fontSize: "1.5rem", marginBottom: "1rem" }}
+        >
           漫語
         </h1>
         <p style={{ fontSize: "0.8rem", lineHeight: 1.4 }}>
@@ -170,7 +190,7 @@ function HomePage() {
                   }}
                 >
                   <img
-                    src={manga.image}
+                    src={`${VITE_API_URL}${manga.image.startsWith('/') ? '' : '/'}${manga.image}`}
                     alt={manga.title}
                     style={{
                       width: "100%",
@@ -178,6 +198,15 @@ function HomePage() {
                       objectFit: "cover",
                       borderRadius: "12px",
                       imageRendering: "pixelated",
+                    }}
+                    onError={(e) => {
+                      console.error("Error loading carousel image:", {
+                        src: e.currentTarget.src,
+                        apiUrl: VITE_API_URL,
+                        imagePath: manga.image,
+                        fullUrl: `${VITE_API_URL}${manga.image}`
+                      });
+                      e.currentTarget.style.display = 'none';
                     }}
                   />
                   <h3 style={{ textAlign: "center", marginTop: "0.5rem" }}>
