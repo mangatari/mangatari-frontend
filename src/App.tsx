@@ -38,6 +38,7 @@ function App() {
   <Route path="/animes/edit/:animeId" element={<IsPrivate><AnimeEdit /></IsPrivate>} />
   <Route path="/mangalist" element={<IsPrivate><MangaList /></IsPrivate>} />
   <Route path="/mangas/edit/:mangaId" element={<IsPrivate><MangaEdit /></IsPrivate>} />
+  <Route path="/mangas/favorites" element={<IsPrivate><FavoritesPage /></IsPrivate>} />
   <Route path="/mangas/create" element={<IsPrivate><MangaCreate /></IsPrivate>} />
   <Route path="/animes/create" element={<IsPrivate><AnimeCreate /></IsPrivate>} />
   <Route path="/animes/:animeId" element={<IsPrivate><AnimeDetails /></IsPrivate>} />
