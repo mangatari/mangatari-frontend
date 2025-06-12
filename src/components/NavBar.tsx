@@ -33,6 +33,13 @@ function Navbar() {
             >
               Anime
             </NavLink>
+            <NavLink
+              to="/favorites"
+              data-tooltip="お気に入り"
+              className={({ isActive }) => `pokemon-menu-link ${isActive ? "active" : ""}`}
+            >
+              Favorites
+            </NavLink>
           </>
         )}
 
