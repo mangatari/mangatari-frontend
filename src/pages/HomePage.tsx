@@ -41,7 +41,7 @@ function HomePage() {
   };
 
   useEffect(() => {
-    const token = localStorage.getItem("authToken");
+   
 
     fetchAnimes();
 
