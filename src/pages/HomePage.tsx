@@ -41,7 +41,7 @@ function HomePage() {
   };
 
   useEffect(() => {
-   
+
 
     fetchAnimes();
 
@@ -98,7 +98,7 @@ function HomePage() {
                   }}
                 >
                   <img
-                    src={anime.image}
+                    src={`${VITE_API_URL}${anime.image.startsWith('/') ? '' : '/'}${anime.image}`}
                     alt={anime.title}
                     style={{
                       width: "100%",
@@ -106,6 +106,16 @@ function HomePage() {
                       objectFit: "cover",
                       borderRadius: "12px",
                       imageRendering: "pixelated",
+                    }}
+                    onError={(e) => {
+                      console.error("Error loading anime image:", {
+                        src: e.currentTarget.src,
+                        apiUrl: VITE_API_URL,
+                        imagePath: anime.image,
+                        fullUrl: `${VITE_API_URL}${anime.image}`
+                      });
+                      e.currentTarget.style.display = 'none';
+                      
                     }}
                   />
                   <h3 style={{ textAlign: "center", marginTop: "0.5rem" }}>
@@ -180,7 +190,7 @@ function HomePage() {
                   }}
                 >
                   <img
-                    src={manga.image}
+                    src={`${VITE_API_URL}${manga.image.startsWith('/') ? '' : '/'}${manga.image}`}
                     alt={manga.title}
                     style={{
                       width: "100%",
@@ -188,6 +198,15 @@ function HomePage() {
                       objectFit: "cover",
                       borderRadius: "12px",
                       imageRendering: "pixelated",
+                    }}
+                    onError={(e) => {
+                      console.error("Error loading carousel image:", {
+                        src: e.currentTarget.src,
+                        apiUrl: VITE_API_URL,
+                        imagePath: manga.image,
+                        fullUrl: `${VITE_API_URL}${manga.image}`
+                      });
+                      e.currentTarget.style.display = 'none';
                     }}
                   />
                   <h3 style={{ textAlign: "center", marginTop: "0.5rem" }}>
