@@ -5,40 +5,39 @@ import axios from "axios";
 import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone";
 import { IconUpload, IconPhoto, IconX } from "@tabler/icons-react";
 import { Group, Text } from "@mantine/core";
-import "../App.css"
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 interface Manga {
   id: number;
   title: string;
-  description: string;
-  year: number;
-  volumes: number;
-  chapters: number;
-  author: string;
-  rating: number;
-  genre: string;
-  status: string;
-  image: string;
+  description?: string;
+  year?: number;
+  volumes?: number;
+  chapters?: number;
+  author?: string;
+  rating?: number;
+  genre?: string;
+  status?: string;
+  image?: string;
 }
 
-function MangaEditPage() {
+function MangaEdit() {
   const { mangaId } = useParams<{ mangaId: string }>();
   const navigate = useNavigate();
 
-  const [title, setTitle] = useState<string>("");
-  const [description, setDescription] = useState<string>("");
-  const [year, setYear] = useState<number>(2024);
-  const [volumes, setVolumes] = useState<number>(0);
-  const [chapters, setChapters] = useState<number>(0);
-  const [author, setAuthor] = useState<string>("");
-  const [rating, setRating] = useState<number>(0);
-  const [genre, setGenre] = useState<string>("");
-  const [status, setStatus] = useState<string>("Ongoing");
-  const [, setImage] = useState<string>("");
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [year, setYear] = useState(2024);
+  const [volumes, setVolumes] = useState(0);
+  const [chapters, setChapters] = useState(0);
+  const [author, setAuthor] = useState("");
+  const [rating, setRating] = useState(0);
+  const [genre, setGenre] = useState("");
+  const [status, setStatus] = useState("Ongoing");
+  const [image, setImage] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("authToken");
@@ -47,19 +46,19 @@ function MangaEditPage() {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((response) => {
-        const manga: Manga = response.data as Manga;
+        const manga = response.data as Manga;
         setTitle(manga.title);
-        setDescription(manga.description);
-        setYear(manga.year);
-        setVolumes(manga.volumes);
-        setChapters(manga.chapters);
-        setAuthor(manga.author);
-        setRating(manga.rating);
-        setGenre(manga.genre);
-        setStatus(manga.status);
-        setImage(manga.image);
+        setDescription(manga.description || "");
+        setYear(manga.year || 2024);
+        setVolumes(manga.volumes || 0);
+        setChapters(manga.chapters || 0);
+        setAuthor(manga.author || "");
+        setRating(manga.rating || 0);
+        setGenre(manga.genre || "");
+        setStatus(manga.status || "Ongoing");
+        setImage(manga.image || "");
       })
-      .catch((error) => console.log(error));
+      .catch((error) => console.error(error));
   }, [mangaId]);
 
   const handleFormSubmit = async (e: FormEvent) => {
@@ -91,7 +90,7 @@ function MangaEditPage() {
         },
       });
       localStorage.setItem("showToast", "Manga updated successfully!");
-      navigate(`/mangalist`);
+      navigate("/mangalist");
     } catch (err) {
       console.error(err);
     } finally {
@@ -99,17 +98,17 @@ function MangaEditPage() {
     }
   };
 
-  const deleteManga = () => {
+  const deleteManga = async () => {
     const token = localStorage.getItem("authToken");
-    axios
-      .delete(`${API_URL}/api/mangas/${mangaId}`, {
+    try {
+      await axios.delete(`${API_URL}/api/mangas/${mangaId}`, {
         headers: { Authorization: `Bearer ${token}` },
-      })
-      .then(() => {
-        localStorage.setItem("showToast", "Manga deleted successfully!");
-        navigate("/mangalist");
-      })
-      .catch((err) => console.error(err));
+      });
+      localStorage.setItem("showToast", "Manga deleted successfully!");
+      navigate("/mangalist");
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   return (
@@ -117,51 +116,59 @@ function MangaEditPage() {
       <h3 className="pixel-titel">Edit the Manga</h3>
 
       <form className="pixel-form" onSubmit={handleFormSubmit}>
-        <label>Title:</label>
-        <input value={title} onChange={(e) => setTitle(e.target.value)} />
+        <label htmlFor="title">Title:</label>
+        <input id="title" value={title} onChange={(e) => setTitle(e.target.value)} />
 
-        <label>Description:</label>
-        <textarea value={description} onChange={(e) => setDescription(e.target.value)} />
+        <label htmlFor="description">Description:</label>
+        <textarea
+          id="description"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+        />
 
-        <label>Year:</label>
+        <label htmlFor="year">Year:</label>
         <input
+          id="year"
           type="number"
           value={year}
           onChange={(e) => setYear(Number(e.target.value))}
         />
 
-        <label>Volumes:</label>
+        <label htmlFor="volumes">Volumes:</label>
         <input
+          id="volumes"
           type="number"
           value={volumes}
           onChange={(e) => setVolumes(Number(e.target.value))}
         />
 
-        <label>Chapters:</label>
+        <label htmlFor="chapters">Chapters:</label>
         <input
+          id="chapters"
           type="number"
           value={chapters}
           onChange={(e) => setChapters(Number(e.target.value))}
         />
 
-        <label>Author:</label>
-        <input value={author} onChange={(e) => setAuthor(e.target.value)} />
+        <label htmlFor="author">Author:</label>
+        <input id="author" value={author} onChange={(e) => setAuthor(e.target.value)} />
 
-        <label>Rating (1–10):</label>
+        <label htmlFor="rating">Rating (1–10):</label>
         <input
+          id="rating"
           type="number"
           min="0"
           max="10"
-          step="0.1"
+          step="1"
           value={rating}
-          onChange={(e) => setRating(parseFloat(e.target.value))}
+          onChange={(e) => setRating(Number(e.target.value))}
         />
 
-        <label>Genre:</label>
-        <input value={genre} onChange={(e) => setGenre(e.target.value)} />
+        <label htmlFor="genre">Genre:</label>
+        <input id="genre" value={genre} onChange={(e) => setGenre(e.target.value)} />
 
-        <label>Status:</label>
-        <select value={status} onChange={(e) => setStatus(e.target.value)}>
+        <label htmlFor="status">Status:</label>
+        <select id="status" value={status} onChange={(e) => setStatus(e.target.value)}>
           <option value="Ongoing">Ongoing</option>
           <option value="Completed">Completed</option>
           <option value="Hiatus">Hiatus</option>
@@ -185,7 +192,6 @@ function MangaEditPage() {
             <Dropzone.Idle>
               <IconPhoto size={52} color="var(--mantine-color-dimmed)" stroke={1.5} />
             </Dropzone.Idle>
-
             <div>
               <Text size="xl" inline>
                 Drag image here or click to select
@@ -197,6 +203,17 @@ function MangaEditPage() {
           </Group>
         </Dropzone>
 
+        {image && !imageFile && (
+          <div style={{ marginTop: "1rem" }}>
+            <Text size="sm">Current image:</Text>
+            <img
+              src={`${API_URL}${image}`}
+              alt="Current manga"
+              style={{ maxWidth: "200px", marginTop: "0.5rem" }}
+            />
+          </div>
+        )}
+
         {imageFile && (
           <Text size="sm" mt="sm">
             Selected image: {imageFile.name}
@@ -206,14 +223,13 @@ function MangaEditPage() {
         <button type="submit" disabled={isSubmitting} style={{ marginTop: "1rem" }}>
           {isSubmitting ? "Updating..." : "Update Manga"}
         </button>
-        <button onClick={deleteManga} style={{ marginTop: "1rem" }}>
-        Delete Manga
-      </button>
-      </form>
 
-     
+        <button type="button" onClick={deleteManga} style={{ marginTop: "1rem" }}>
+          Delete Manga
+        </button>
+      </form>
     </div>
   );
 }
 
-export default MangaEditPage;
+export default MangaEdit;

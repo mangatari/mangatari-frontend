@@ -23,34 +23,66 @@ function AnimeCreate() {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Removed duplicate handleFormSubmit function
+
+  const uploadImageToFirebase = async (): Promise<{ url: string; filename: string } | null> => {
+    if (!imageFile) return null;
+
+    const token = localStorage.getItem("authToken");
+    const formData = new FormData();
+    formData.append("file", imageFile);
+    formData.append("type", "anime"); // or "manga"
+
+    try {
+      const res = await axios.post(`${API_URL}/api/upload`, formData, {
+        headers: {
+          Authorization: token ? `Bearer ${token}` : "",
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      return res.data;
+    } catch (err) {
+      console.error("Image upload failed:", err);
+      setError("Image upload failed. Please try again.");
+      return null;
+    }
+  };
   const handleFormSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     setError(null);
 
     const token = localStorage.getItem("authToken");
-    const formData = new FormData();
 
-    formData.append("title", title);
-    formData.append("description", description);
-    formData.append("year", year.toString());
-    formData.append("episodes", episodes.toString());
-    formData.append("studio", studio);
-    formData.append("rating", rating.toString());
-    formData.append("genre", genre);
-    formData.append("status", status);
-
+    // Step 1: Upload the image first
+    let uploadedImage;
     if (imageFile) {
-      formData.append("image", imageFile);
+      uploadedImage = await uploadImageToFirebase();
+      if (!uploadedImage) {
+        setIsSubmitting(false);
+        return; // Abort submission if image upload fails
+      }
     }
 
+    // Step 2: Send form data with image URL
     try {
-      await axios.post(`${API_URL}/api/animes`, formData, {
+      await axios.post(`${API_URL}/api/animes`, {
+        title,
+        description,
+        year,
+        episodes,
+        studio,
+        rating,
+        genre,
+        status,
+        image: uploadedImage?.url || "", // Firebase image URL
+      }, {
         headers: {
           Authorization: token ? `Bearer ${token}` : "",
-          "Content-Type": "multipart/form-data",
         },
       });
+
       localStorage.setItem("showToast", "Anime created successfully!");
       navigate('/animelist');
     } catch (err) {
@@ -60,6 +92,7 @@ function AnimeCreate() {
       setIsSubmitting(false);
     }
   };
+
 
   return (
     <div className="pixel-page">
@@ -171,6 +204,13 @@ function AnimeCreate() {
           <Text size="sm" mt="sm">
             Selected image: {imageFile.name}
           </Text>
+        )}
+        {imageFile && (
+          <img
+            src={URL.createObjectURL(imageFile)}
+            alt="Preview"
+            style={{ maxHeight: "200px", marginTop: "1rem" }}
+          />
         )}
 
         {error && (

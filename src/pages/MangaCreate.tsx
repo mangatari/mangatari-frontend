@@ -5,11 +5,10 @@ import axios from "axios";
 import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone";
 import { IconUpload, IconPhoto, IconX } from "@tabler/icons-react";
 import { Group, Text } from "@mantine/core";
-import "../App.css";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-function MangaCreatePage() {
+function MangaCreate() {
   const navigate = useNavigate();
 
   const [title, setTitle] = useState<string>("");
@@ -25,35 +24,64 @@ function MangaCreatePage() {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
+  const uploadImageToFirebase = async (): Promise<{ url: string; filename: string } | null> => {
+    if (!imageFile) return null;
+
+    const token = localStorage.getItem("authToken");
+    const formData = new FormData();
+    formData.append("file", imageFile);
+    formData.append("type", "manga");
+
+    try {
+      const res = await axios.post(`${API_URL}/api/upload`, formData, {
+        headers: {
+          Authorization: token ? `Bearer ${token}` : "",
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      return res.data;
+    } catch (err) {
+      console.error("Image upload failed:", err);
+      setError("Image upload failed. Please try again.");
+      return null;
+    }
+  };
+
   const handleFormSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     setError(null);
 
     const token = localStorage.getItem("authToken");
-    const formData = new FormData();
 
-    formData.append("title", title);
-    formData.append("description", description);
-    formData.append("year", year.toString());
-    formData.append("volumes", volumes.toString());
-    formData.append("chapters", chapters.toString());
-    formData.append("author", author);
-    formData.append("rating", rating.toString());
-    formData.append("genre", genre);
-    formData.append("status", status);
-
+    let uploadedImage;
     if (imageFile) {
-      formData.append("image", imageFile);
+      uploadedImage = await uploadImageToFirebase();
+      if (!uploadedImage) {
+        setIsSubmitting(false);
+        return;
+      }
     }
 
     try {
-      await axios.post(`${API_URL}/api/mangas`, formData, {
+      await axios.post(`${API_URL}/api/mangas`, {
+        title,
+        description,
+        year,
+        volumes,
+        chapters,
+        author,
+        rating,
+        genre,
+        status,
+        image: uploadedImage?.url || "",
+      }, {
         headers: {
           Authorization: token ? `Bearer ${token}` : "",
-          "Content-Type": "multipart/form-data",
         },
       });
+
       localStorage.setItem("showToast", "Manga created successfully!");
       navigate('/mangalist');
     } catch (err) {
@@ -116,9 +144,9 @@ function MangaCreatePage() {
           type="number"
           min={0}
           max={10}
-          step={0.1}
+          step={1}
           value={rating}
-          onChange={(e) => setRating(parseFloat(e.target.value))}
+          onChange={(e) => setRating(parseInt(e.target.value, 10))}
         />
 
         <label>Genre:</label>
@@ -183,6 +211,13 @@ function MangaCreatePage() {
             Selected image: {imageFile.name}
           </Text>
         )}
+        {imageFile && (
+          <img
+            src={URL.createObjectURL(imageFile)}
+            alt="Preview"
+            style={{ maxHeight: "200px", marginTop: "1rem" }}
+          />
+        )}
 
         {error && (
           <p style={{ color: "red", marginTop: "1rem", fontWeight: "bold" }}>
@@ -198,4 +233,4 @@ function MangaCreatePage() {
   );
 }
 
-export default MangaCreatePage;
+export default MangaCreate;
