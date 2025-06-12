@@ -46,9 +46,7 @@ function HomePage() {
     fetchAnimes();
 
     axios
-      .get<Manga[]>(`${VITE_API_URL}/api/mangas`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+      .get<Manga[]>(`${VITE_API_URL}/api/mangas`)
       .then((response) => setMangas(response.data))
       .catch((e) => console.error("Error fetching mangas:", e));
   }, []);
