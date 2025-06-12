@@ -3,7 +3,6 @@ import { useEffect, useState, useRef } from "react";
 import type { ChangeEvent } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
-import SearchBar from "../components/SearchBar";
 import "../App.css"; 
 
 const API_URL = import.meta.env.VITE_API_URL;
