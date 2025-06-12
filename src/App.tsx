@@ -20,6 +20,8 @@ import IsPrivate from './components/IsPrivate';
 import IsAnon from './components/IsAnon';
 import AnimeCreate from './pages/AnimeCreate';
 import FavoritesPage from './pages/FavoritesPage';
+import { ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css'; 
 
 function App() {
   return (
@@ -45,6 +47,17 @@ function App() {
   <Route path="/mangas/:mangaId" element={<IsPrivate><MangaDetails /></IsPrivate>} />
 </Routes>
      <Footer />
+     <ToastContainer
+        position="top-left"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={true}
+        closeOnClick
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
     </>
   )
 }

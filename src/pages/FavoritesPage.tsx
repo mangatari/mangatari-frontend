@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../context/auth.context";
 import { useNavigate, Link } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -30,9 +31,9 @@ function FavoritesPage() {
   }, [isLoading, isLoggedIn, navigate]);
 
   useEffect(() => {
+    if (!user?.id) return;
     const token = localStorage.getItem("authToken");
-
-    if (!token || !user?.id) return;
+    if (!token) return;
 
     const headers = {
       Authorization: `Bearer ${token}`
@@ -49,11 +50,8 @@ function FavoritesPage() {
           throw new Error("Failed to fetch favorites");
         }
 
-        const animeData = await animeRes.json();
-        const mangaData = await mangaRes.json();
-
-        setAnimes(animeData);
-        setMangas(mangaData);
+        setAnimes(await animeRes.json());
+        setMangas(await mangaRes.json());
       } catch (err: any) {
         console.error("Error loading favorites:", err);
         setError(err.message || "Something went wrong");
@@ -62,6 +60,33 @@ function FavoritesPage() {
 
     fetchFavorites();
   }, [user]);
+
+  const handleRemoveFavorite = async (type: "anime" | "manga", id: number) => {
+    const token = localStorage.getItem("authToken");
+    if (!token || !user?.id) return;
+
+    try {
+      const res = await fetch(`${API_URL}/api/favorites/${type}/${user.id}/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!res.ok) throw new Error("Failed to remove favorite");
+
+      toast.success("Removed from favorites!");
+
+      if (type === "anime") {
+        setAnimes((prev) => prev.filter((a) => a.id !== id));
+      } else {
+        setMangas((prev) => prev.filter((m) => m.id !== id));
+      }
+    } catch (err) {
+      console.error("Remove failed:", err);
+      toast.error("Could not remove from favorites");
+    }
+  };
 
   if (isLoading) return <div className="loading-text">Loading user...</div>;
   if (error) return <div className="loading-text">Error: {error}</div>;
@@ -74,12 +99,18 @@ function FavoritesPage() {
           <p>No favorite anime yet.</p>
         ) : (
           animes.map((anime) => (
-            <Link to={`/animes/${anime.id}`} className="card-link" key={anime.id}>
-              <div className="item-card">
+            <div key={anime.id} className="item-card">
+              <Link to={`/animes/${anime.id}`} className="card-link">
                 {anime.image && <img src={`${API_URL}${anime.image}`} alt={anime.title} />}
                 <p>{anime.title}</p>
-              </div>
-            </Link>
+              </Link>
+              <button
+                className="pixel-button"
+                onClick={() => handleRemoveFavorite("anime", anime.id)}
+              >
+                Remove
+              </button>
+            </div>
           ))
         )}
       </div>
@@ -90,12 +121,18 @@ function FavoritesPage() {
           <p>No favorite manga yet.</p>
         ) : (
           mangas.map((manga) => (
-            <Link to={`/mangas/${manga.id}`} className="card-link" key={manga.id}>
-              <div className="item-card">
+            <div key={manga.id} className="item-card">
+              <Link to={`/mangas/${manga.id}`} className="card-link">
                 {manga.image && <img src={`${API_URL}${manga.image}`} alt={manga.title} />}
                 <p>{manga.title}</p>
-              </div>
-            </Link>
+              </Link>
+              <button
+                className="pixel-button"
+                onClick={() => handleRemoveFavorite("manga", manga.id)}
+              >
+                Remove
+              </button>
+            </div>
           ))
         )}
       </div>
@@ -143,6 +180,26 @@ function FavoritesPage() {
         .card-link {
           text-decoration: none;
           color: inherit;
+        }
+
+        .pixel-button {
+          margin-top: 0.75rem;
+          font-family: "Press Start 2P", monospace;
+          font-size: 0.55rem;
+          padding: 0.5rem 0.75rem;
+          background-color: #e0f2e9;
+          color: #243b0a;
+          border: 3px solid #243b0a;
+          box-shadow: 4px 4px 0 #6a7a19;
+          text-transform: uppercase;
+          cursor: pointer;
+          transition: 0.2s ease;
+        }
+
+        .pixel-button:hover {
+          background-color: #243b0a;
+          color: #e0f2e9;
+          box-shadow: 2px 2px 0 #6a7a19;
         }
 
         .loading-text {

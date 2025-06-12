@@ -188,7 +188,32 @@ function AnimeList() {
             {isLoggedIn && (
               <button
                 onClick={() => handleAddFavorite(anime.id)}
-                className="favorite-button"
+                style={{
+                  fontFamily: "'Press Start 2P', monospace",
+                  backgroundColor: "#e0f2e9",
+                  color: "#243b0a",
+                  border: "3px solid #243b0a",
+                  boxShadow: "4px 4px 0 #6a7a19",
+                  padding: "0.75rem 1.25rem",
+                  fontSize: "0.65rem",
+                  textTransform: "uppercase",
+                  letterSpacing: "1px",
+                  cursor: "pointer",
+                  userSelect: "none",
+                  outline: "none",
+                  borderRadius: 0,
+                  transition: "background-color 0.2s, color 0.2s",
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget.style.backgroundColor = "#243b0a");
+                  (e.currentTarget.style.color = "#e0f2e9");
+                  (e.currentTarget.style.boxShadow = "2px 2px 0 #6a7a19");
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget.style.backgroundColor = "#e0f2e9");
+                  (e.currentTarget.style.color = "#243b0a");
+                  (e.currentTarget.style.boxShadow = "4px 4px 0 #6a7a19");
+                }}
               >
                 ❤️ Favorite
               </button>
