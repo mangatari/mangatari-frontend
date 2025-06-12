@@ -30,11 +30,8 @@ function AnimeList() {
   const { user, isLoggedIn } = useContext(AuthContext);
 
   useEffect(() => {
-    const token = localStorage.getItem("authToken");
     axios
-      .get(`${API_URL}/api/animes`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+      .get(`${API_URL}/api/animes`)
       .then((response) => {
         setAnimes(response.data as Anime[]);
         setOriginalAnimes(response.data as Anime[]);
@@ -75,7 +72,6 @@ function AnimeList() {
 
   const sortAnime = (option: keyof SortOption) => {
     let sortedAnime: Anime[] = [...animes];
-
     if (option === "genre") {
       sortedAnime.sort((a, b) => a.genre.localeCompare(b.genre));
     } else if (option === "year") {
@@ -84,75 +80,49 @@ function AnimeList() {
       sortedAnime.sort((a, b) => a.title.localeCompare(b.title));
     } else if (option === "rating") {
       sortedAnime.sort((a, b) => b.rating - a.rating);
-    } else {
-      sortedAnime = [...originalAnimes];
     }
-
     setAnimes(sortedAnime);
   };
 
-  const handleAddFavorite = (animeId: number) => {
+  const handleAddFavorite = async (animeId: number) => {
     if (!user) return;
 
-    axios
-      .post(
-        `${API_URL}/api/favorites/anime`,
-        { userId: parseInt(user.id ?? "0", 10), animeId },
-        {
-          headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}` },
-        }
-      )
-      .then(() => toast.success("Added to favorites!"))
-      .catch((err) => {
-        if (err.response?.status === 400) {
-          toast.info("Already in favorites.");
-        } else {
-          toast.error("Failed to add to favorites.");
-        }
+    try {
+      await axios.post(`${API_URL}/api/favorites/anime`, {
+        userId: parseInt(user.id ?? "0", 10),
+        animeId,
       });
+      toast.success("Anime added to favorites!");
+    } catch (err: any) {
+      if (err.response?.status === 400) {
+        toast.info("Already in favorites.");
+      } else {
+        toast.error("Could not add to favorites.");
+      }
+    }
   };
 
   return (
     <div className="pokemon-container">
-      <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "1rem" }}>
-        <div style={{ position: "relative", width: "300px", fontFamily: "'Press Start 2P', monospace" }}>
-          <input
-            type="text"
-            onChange={onChange}
-            placeholder="SEARCH..."
-            style={{
-              width: "100%",
-              padding: "0.75rem 1rem",
-              paddingRight: "2.5rem",
-              fontFamily: "inherit",
-              fontSize: "0.65rem",
-              backgroundColor: "#e0f2e9",
-              color: "#243b0a",
-              border: "3px solid #243b0a",
-              boxShadow: "4px 4px 0 #6a7a19",
-              outline: "none",
-              textTransform: "uppercase",
-              letterSpacing: "1px",
-              imageRendering: "pixelated",
-            }}
-          />
-          <div
-            style={{
-              position: "absolute",
-              right: "12px",
-              top: "50%",
-              transform: "translateY(-50%)",
-              pointerEvents: "none",
-              fontSize: "0.8rem",
-              color: "#243b0a",
-            }}
-          >
-            🔍
-          </div>
-        </div>
-      </div>
-
-      <div style={{ position: "relative", display: "inline-block", fontFamily: "'Press Start 2P', monospace" }}>
+      {/* Search + Sort */}
+      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "1.5rem" }}>
+        <input
+          type="text"
+          onChange={onChange}
+          placeholder="SEARCH..."
+          style={{
+            width: "300px",
+            fontFamily: "'Press Start 2P', monospace",
+            padding: "0.75rem 1rem",
+            backgroundColor: "#e0f2e9",
+            color: "#243b0a",
+            border: "3px solid #243b0a",
+            boxShadow: "4px 4px 0 #6a7a19",
+            fontSize: "0.65rem",
+            textTransform: "uppercase",
+            letterSpacing: "1px",
+          }}
+        />
         <select
           value={sortOption}
           onChange={(e) => {
@@ -162,17 +132,12 @@ function AnimeList() {
           }}
           style={{
             width: "180px",
-            padding: "0.5rem 0.75rem",
-            paddingRight: "2rem",
-            fontFamily: "inherit",
-            fontSize: "0.65rem",
+            padding: "0.5rem",
+            fontFamily: "'Press Start 2P', monospace",
             backgroundColor: "#e0f2e9",
             color: "#243b0a",
             border: "3px solid #243b0a",
-            boxShadow: "3px 3px 0 #6a7a19",
-            cursor: "pointer",
-            appearance: "none",
-            outline: "none",
+            fontSize: "0.65rem",
             textTransform: "uppercase",
           }}
         >
@@ -182,29 +147,17 @@ function AnimeList() {
           <option value="year">NEWEST</option>
           <option value="rating">BEST</option>
         </select>
-        <div
-          style={{
-            position: "absolute",
-            right: "10px",
-            top: "50%",
-            transform: "translateY(-50%)",
-            pointerEvents: "none",
-            fontSize: "0.8rem",
-            color: "#243b0a",
-          }}
-        >
-          ▼
-        </div>
       </div>
 
+      {/* Header & Add Button */}
       <h1 className="pokemon-title">All Animes</h1>
-
       <div style={{ textAlign: "center", marginBottom: "2rem" }}>
         <Link to="/animes/create" className="pokemon-button">
           Add New Anime
         </Link>
       </div>
 
+      {/* Anime Grid */}
       <div
         style={{
           display: "grid",
@@ -218,10 +171,9 @@ function AnimeList() {
               {anime.image && (
                 <img
                   src={`${API_URL}${anime.image.startsWith("/") ? "" : "/"}${anime.image}`}
-                  alt="Anime"
+                  alt={anime.title}
                   style={{ width: "200px", marginBottom: "1rem" }}
                   onError={(e) => {
-                    console.error("Error loading image:", e.currentTarget.src);
                     e.currentTarget.style.display = "none";
                   }}
                 />
@@ -235,11 +187,8 @@ function AnimeList() {
             </Link>
             {isLoggedIn && (
               <button
+                onClick={() => handleAddFavorite(anime.id)}
                 className="favorite-button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleAddFavorite(anime.id);
-                }}
               >
                 ❤️ Favorite
               </button>
