@@ -6,50 +6,44 @@ import { Link } from "react-router-dom";
 
 const VITE_API_URL = import.meta.env.VITE_API_URL;
 
-interface Anime {
+interface MediaItem {
   id: number;
   title: string;
-  image: string;
-}
-
-interface Manga {
-  id: number;
-  title: string;
-  image: string;
+  image: string | null;
 }
 
 function HomePage() {
-  const [animes, setAnimes] = useState<Anime[]>([]);
-  const [mangas, setMangas] = useState<Manga[]>([]);
+  const [animes, setAnimes] = useState<MediaItem[]>([]);
+  const [mangas, setMangas] = useState<MediaItem[]>([]);
 
-  // Setup autoplay plugins separately for anime and manga carousels
   const animeAutoplay = useRef(Autoplay({ delay: 3000 }));
   const mangaAutoplay = useRef(Autoplay({ delay: 3000 }));
 
-  const fetchAnimes = async () => {
-    try {
-      const response = await fetch(`${VITE_API_URL}/api/animes`);
-      if (response.ok) {
-        const animesData = await response.json();
-        setAnimes(animesData);
-      } else {
-        throw new Error("Response not ok");
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   useEffect(() => {
-
+    const fetchAnimes = async () => {
+      try {
+        const response = await fetch(`${VITE_API_URL}/api/animes`);
+        if (!response.ok) throw new Error("Failed to fetch animes");
+        const data = await response.json();
+        setAnimes(data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
 
     fetchAnimes();
 
     axios
-      .get<Manga[]>(`${VITE_API_URL}/api/mangas`)
-      .then((response) => setMangas(response.data))
-      .catch((e) => console.error("Error fetching mangas:", e));
+      .get<MediaItem[]>(`${VITE_API_URL}/api/mangas`)
+      .then((res) => setMangas(res.data))
+      .catch((err) => console.error("Error fetching mangas:", err));
   }, []);
+
+  const getImageUrl = (image: string | null) => {
+    if (!image) return ""; // Return blank if image is null or undefined
+    const cleanPath = image.startsWith("/") ? image : `/${image}`;
+    return `${VITE_API_URL}${cleanPath}`;
+  };
 
   return (
     <div
@@ -98,7 +92,7 @@ function HomePage() {
                   }}
                 >
                   <img
-                    src={`${VITE_API_URL}${anime.image.startsWith('/') ? '' : '/'}${anime.image}`}
+                    src={getImageUrl(anime.image)}
                     alt={anime.title}
                     style={{
                       width: "100%",
@@ -108,14 +102,8 @@ function HomePage() {
                       imageRendering: "pixelated",
                     }}
                     onError={(e) => {
-                      console.error("Error loading anime image:", {
-                        src: e.currentTarget.src,
-                        apiUrl: VITE_API_URL,
-                        imagePath: anime.image,
-                        fullUrl: `${VITE_API_URL}${anime.image}`
-                      });
-                      e.currentTarget.style.display = 'none';
-                      
+                      console.error("Anime image error", e.currentTarget.src);
+                      e.currentTarget.style.display = "none";
                     }}
                   />
                   <h3 style={{ textAlign: "center", marginTop: "0.5rem" }}>
@@ -128,7 +116,7 @@ function HomePage() {
         </div>
       </div>
 
-      {/* Center Feature Section */}
+      {/* Center Feature */}
       <div
         style={{
           flexBasis: "300px",
@@ -142,10 +130,7 @@ function HomePage() {
           userSelect: "none",
         }}
       >
-        <h1
-          className="round"
-          style={{ fontSize: "1.5rem", marginBottom: "1rem" }}
-        >
+        <h1 className="round" style={{ fontSize: "1.5rem", marginBottom: "1rem" }}>
           漫語
         </h1>
         <p style={{ fontSize: "0.8rem", lineHeight: 1.4 }}>
@@ -190,7 +175,7 @@ function HomePage() {
                   }}
                 >
                   <img
-                    src={`${VITE_API_URL}${manga.image.startsWith('/') ? '' : '/'}${manga.image}`}
+                    src={getImageUrl(manga.image)}
                     alt={manga.title}
                     style={{
                       width: "100%",
@@ -200,13 +185,8 @@ function HomePage() {
                       imageRendering: "pixelated",
                     }}
                     onError={(e) => {
-                      console.error("Error loading carousel image:", {
-                        src: e.currentTarget.src,
-                        apiUrl: VITE_API_URL,
-                        imagePath: manga.image,
-                        fullUrl: `${VITE_API_URL}${manga.image}`
-                      });
-                      e.currentTarget.style.display = 'none';
+                      console.error("Manga image error", e.currentTarget.src);
+                      e.currentTarget.style.display = "none";
                     }}
                   />
                   <h3 style={{ textAlign: "center", marginTop: "0.5rem" }}>
