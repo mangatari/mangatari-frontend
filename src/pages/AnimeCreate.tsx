@@ -25,100 +25,85 @@ function AnimeCreate() {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  const uploadImageToSupabase = async (): Promise<string | null> => {
-    if (!imageFile) return null;
+const uploadImageToSupabase = async (): Promise<string | null> => {
+  if (!imageFile) return null;
 
-    try {
-      // Validate file type
-      const validTypes = ['image/jpeg', 'image/png', 'image/webp'];
-      if (!validTypes.includes(imageFile.type)) {
-        throw new Error('Only JPG, PNG, and WEBP files are allowed');
-      }
-
-      const fileExt = imageFile.name.split('.').pop();
-      const fileName = `${Date.now()}.${fileExt}`;
-      
-      const { data, error } = await supabase.storage
-        .from('anime-pics')
-        .upload(fileName, imageFile, {
-          cacheControl: '3600',
-          upsert: false,
-          contentType: imageFile.type
-        });
-
-      if (error) throw error;
-
-      const { data: { publicUrl } } = supabase.storage
-        .from('anime-pics')
-        .getPublicUrl(data.path);
-
-      return publicUrl;
-    } catch (err) {
-      console.error("Upload error:", err);
-      setError(
-        err instanceof Error 
-          ? `Image upload failed: ${err.message}`
-          : "Image upload failed"
-      );
-      return null;
-    }
-  };
-
-  const handleFormSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setError(null);
-
-    try {
-      // Validate API URL
-      if (!API_URL) {
-        throw new Error("Application configuration error");
-      }
-
-      // Upload image if selected
-      const imageUrl = imageFile ? await uploadImageToSupabase() : null;
-      if (imageFile && !imageUrl) return;
-
-      // Create anime record
-      await axios.post(`${API_URL}/api/animes`, {
-        title,
-        description,
-        year,
-        episodes,
-        studio,
-        rating,
-        genre,
-        status,
-        imageUrl
-      }, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("authToken")}`
-        }
+  try {
+    const fileExt = imageFile.name.split('.').pop();
+    const fileName = `${Date.now()}.${fileExt}`;
+    
+    // Convert File to ArrayBuffer for Supabase upload
+    const fileBuffer = await imageFile.arrayBuffer();
+    
+    const { data, error } = await supabase.storage
+      .from('anime-pics')
+      .upload(fileName, fileBuffer, {  // Changed from imageFile to fileBuffer
+        cacheControl: '3600',
+        upsert: false,
+        contentType: imageFile.type
       });
 
-      // Redirect with success state
-      navigate('/animelist', { 
-        state: { 
-          toast: {
-            message: "Anime created successfully!",
-            type: "success",
-            imageUrl
-          }
-        } 
-      });
-    } catch (err) {
-      console.error("Error:", err);
-      setError(
-        axios.isAxiosError(err)
-          ? err.response?.data?.message || "Failed to create anime"
-          : err instanceof Error
-            ? err.message
-            : "An unexpected error occurred"
-      );
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+    if (error) throw error;
+
+    // Get public URL - simplified syntax
+    return `${process.env.VITE_SUPABASE_URL}/storage/v1/object/public/anime-pics/${data.path}`;
+    
+  } catch (err) {
+    console.error("Upload error:", err);
+    setError(
+      err instanceof Error 
+        ? `Image upload failed: ${err.message}`
+        : "Image upload failed"
+    );
+    return null;
+  }
+};
+
+const handleFormSubmit = async (e: FormEvent) => {
+  e.preventDefault();
+  setIsSubmitting(true);
+  setError(null);
+
+  try {
+    // First upload image if one was selected
+    const imageUrl = imageFile ? await uploadImageToSupabase() : null;
+    if (imageFile && !imageUrl) return; // Stop if upload failed
+
+    // Then create the anime record
+    const response = await axios.post(`${API_URL}/api/animes`, {
+      title,
+      description,
+      year,
+      episodes,
+      studio,
+      rating,
+      genre,
+      status,
+      imageUrl
+    }, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("authToken")}`
+      }
+    });
+
+    navigate('/animelist', { 
+      state: { 
+        toast: "Anime created successfully!",
+        anime: response.data // Pass the created anime data
+      } 
+    });
+    
+  } catch (err) {
+    console.error("Creation failed:", err);
+    setError(
+      axios.isAxiosError(err) 
+        ? err.response?.data?.message || "Failed to create anime"
+        : "An unexpected error occurred"
+    );
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
   return (
     <div className="pixel-page">
