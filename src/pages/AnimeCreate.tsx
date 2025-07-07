@@ -5,7 +5,7 @@ import axios from "axios";
 import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone";
 import { IconUpload, IconPhoto, IconX } from "@tabler/icons-react";
 import { Group, Text } from "@mantine/core";
-import { supabase } from "../lib/supabase"; // Create this file (see setup below)
+import { supabase } from "../lib/supabase";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -29,14 +29,21 @@ function AnimeCreate() {
     if (!imageFile) return null;
 
     try {
+      // Validate file type
+      const validTypes = ['image/jpeg', 'image/png', 'image/webp'];
+      if (!validTypes.includes(imageFile.type)) {
+        throw new Error('Only JPG, PNG, and WEBP files are allowed');
+      }
+
       const fileExt = imageFile.name.split('.').pop();
-      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}.${fileExt}`;
+      const fileName = `${Date.now()}.${fileExt}`;
       
       const { data, error } = await supabase.storage
         .from('anime-pics')
         .upload(fileName, imageFile, {
           cacheControl: '3600',
-          upsert: false
+          upsert: false,
+          contentType: imageFile.type
         });
 
       if (error) throw error;
@@ -47,8 +54,12 @@ function AnimeCreate() {
 
       return publicUrl;
     } catch (err) {
-      console.error("Image upload failed:", err);
-      setError("Image upload failed. Please try again.");
+      console.error("Upload error:", err);
+      setError(
+        err instanceof Error 
+          ? `Image upload failed: ${err.message}`
+          : "Image upload failed"
+      );
       return null;
     }
   };
@@ -58,51 +69,56 @@ function AnimeCreate() {
     setIsSubmitting(true);
     setError(null);
 
-     try {
-    // 1. Upload image to Supabase
-    const imageUrl = imageFile ? await uploadImageToSupabase() : null;
-    
-    // 2. Verify upload succeeded if file was selected
-    if (imageFile && !imageUrl) {
-      throw new Error('Image upload failed');
-    }
-
-    // 3. Create anime record
-    await axios.post(`${API_URL}/api/animes`, {
-      title,
-      description,
-      year,
-      episodes,
-      studio,
-      rating,
-      genre,
-      status,
-      imageUrl
-    }, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("authToken")}`
+    try {
+      // Validate API URL
+      if (!API_URL) {
+        throw new Error("Application configuration error");
       }
-    });
 
-    navigate('/animelist', { 
-      state: { 
-        toast: "Anime created successfully!",
-        imageUrl // Pass the URL for immediate display
-      } 
-    });
-  } catch (err) {
-    console.error("Full error:", err);
-    setError(
-      axios.isAxiosError(err) 
-        ? err.response?.data?.message || "Failed to create anime"
-        : typeof err === "object" && err !== null && "message" in err
-          ? String((err as { message: unknown }).message)
-          : "An unknown error occurred"
-    );
-  } finally {
-    setIsSubmitting(false);
-  }
-};
+      // Upload image if selected
+      const imageUrl = imageFile ? await uploadImageToSupabase() : null;
+      if (imageFile && !imageUrl) return;
+
+      // Create anime record
+      await axios.post(`${API_URL}/api/animes`, {
+        title,
+        description,
+        year,
+        episodes,
+        studio,
+        rating,
+        genre,
+        status,
+        imageUrl
+      }, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("authToken")}`
+        }
+      });
+
+      // Redirect with success state
+      navigate('/animelist', { 
+        state: { 
+          toast: {
+            message: "Anime created successfully!",
+            type: "success",
+            imageUrl
+          }
+        } 
+      });
+    } catch (err) {
+      console.error("Error:", err);
+      setError(
+        axios.isAxiosError(err)
+          ? err.response?.data?.message || "Failed to create anime"
+          : err instanceof Error
+            ? err.message
+            : "An unexpected error occurred"
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div className="pixel-page">
@@ -242,7 +258,7 @@ function AnimeCreate() {
           {isSubmitting ? (
             <span className="flex items-center justify-center">
               <svg className="animate-spin h-5 w-5 mr-2" viewBox="0 0 24 24">
-                {/* Loading spinner icon */}
+                <path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83" />
               </svg>
               Creating...
             </span>
