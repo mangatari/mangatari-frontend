@@ -58,38 +58,51 @@ function AnimeCreate() {
     setIsSubmitting(true);
     setError(null);
 
-    try {
-      // 1. Upload image first (if exists)
-      const imageUrl = imageFile ? await uploadImageToSupabase() : null;
-      if (imageFile && !imageUrl) return; // Stop if upload failed
-
-      // 2. Create anime record
-      await axios.post(`${API_URL}/api/animes`, {
-        title,
-        description,
-        year,
-        episodes,
-        studio,
-        rating,
-        genre,
-        status,
-        imageUrl
-      }, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("authToken")}`
-        }
-      });
-
-      navigate('/animelist', { state: { toast: "Anime created successfully!" } });
-    } catch (err) {
-      console.error("Creation failed:", err);
-      setError(axios.isAxiosError(err) 
-        ? err.response?.data?.message || "Failed to create anime"
-        : "An unexpected error occurred");
-    } finally {
-      setIsSubmitting(false);
+     try {
+    // 1. Upload image to Supabase
+    const imageUrl = imageFile ? await uploadImageToSupabase() : null;
+    
+    // 2. Verify upload succeeded if file was selected
+    if (imageFile && !imageUrl) {
+      throw new Error('Image upload failed');
     }
-  };
+
+    // 3. Create anime record
+    await axios.post(`${API_URL}/api/animes`, {
+      title,
+      description,
+      year,
+      episodes,
+      studio,
+      rating,
+      genre,
+      status,
+      imageUrl
+    }, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("authToken")}`
+      }
+    });
+
+    navigate('/animelist', { 
+      state: { 
+        toast: "Anime created successfully!",
+        imageUrl // Pass the URL for immediate display
+      } 
+    });
+  } catch (err) {
+    console.error("Full error:", err);
+    setError(
+      axios.isAxiosError(err) 
+        ? err.response?.data?.message || "Failed to create anime"
+        : typeof err === "object" && err !== null && "message" in err
+          ? String((err as { message: unknown }).message)
+          : "An unknown error occurred"
+    );
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
   return (
     <div className="pixel-page">
