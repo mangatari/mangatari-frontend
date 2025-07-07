@@ -5,12 +5,14 @@ import axios from "axios";
 import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone";
 import { IconUpload, IconPhoto, IconX } from "@tabler/icons-react";
 import { Group, Text } from "@mantine/core";
+import { supabase } from "../lib/supabase"; // Create this file (see setup below)
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 function AnimeCreate() {
   const navigate = useNavigate();
 
+  // Form state
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [year, setYear] = useState<number>(new Date().getFullYear());
@@ -23,50 +25,45 @@ function AnimeCreate() {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Removed duplicate handleFormSubmit function
-
-  const uploadImageToFirebase = async (): Promise<{ url: string; filename: string } | null> => {
+  const uploadImageToSupabase = async (): Promise<string | null> => {
     if (!imageFile) return null;
 
-    const token = localStorage.getItem("authToken");
-    const formData = new FormData();
-    formData.append("file", imageFile);
-    formData.append("type", "anime"); // or "manga"
-
     try {
-      const res = await axios.post(`${API_URL}/api/upload`, formData, {
-        headers: {
-          Authorization: token ? `Bearer ${token}` : "",
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const fileExt = imageFile.name.split('.').pop();
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}.${fileExt}`;
+      
+      const { data, error } = await supabase.storage
+        .from('anime-pics')
+        .upload(fileName, imageFile, {
+          cacheControl: '3600',
+          upsert: false
+        });
 
-      return res.data;
+      if (error) throw error;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('anime-pics')
+        .getPublicUrl(data.path);
+
+      return publicUrl;
     } catch (err) {
       console.error("Image upload failed:", err);
       setError("Image upload failed. Please try again.");
       return null;
     }
   };
+
   const handleFormSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     setError(null);
 
-    const token = localStorage.getItem("authToken");
-
-    // Step 1: Upload the image first
-    let uploadedImage;
-    if (imageFile) {
-      uploadedImage = await uploadImageToFirebase();
-      if (!uploadedImage) {
-        setIsSubmitting(false);
-        return; // Abort submission if image upload fails
-      }
-    }
-
-    // Step 2: Send form data with image URL
     try {
+      // 1. Upload image first (if exists)
+      const imageUrl = imageFile ? await uploadImageToSupabase() : null;
+      if (imageFile && !imageUrl) return; // Stop if upload failed
+
+      // 2. Create anime record
       await axios.post(`${API_URL}/api/animes`, {
         title,
         description,
@@ -76,29 +73,30 @@ function AnimeCreate() {
         rating,
         genre,
         status,
-        image: uploadedImage?.url || "", // Firebase image URL
+        imageUrl
       }, {
         headers: {
-          Authorization: token ? `Bearer ${token}` : "",
-        },
+          Authorization: `Bearer ${localStorage.getItem("authToken")}`
+        }
       });
 
-      localStorage.setItem("showToast", "Anime created successfully!");
-      navigate('/animelist');
+      navigate('/animelist', { state: { toast: "Anime created successfully!" } });
     } catch (err) {
-      console.error(err);
-      setError("Failed to create anime. Please try again.");
+      console.error("Creation failed:", err);
+      setError(axios.isAxiosError(err) 
+        ? err.response?.data?.message || "Failed to create anime"
+        : "An unexpected error occurred");
     } finally {
       setIsSubmitting(false);
     }
   };
-
 
   return (
     <div className="pixel-page">
       <h3 className="pixel-titel">Create a New Anime</h3>
 
       <form className="pixel-form" onSubmit={handleFormSubmit}>
+        {/* Title */}
         <label>Title:</label>
         <input
           value={title}
@@ -107,12 +105,15 @@ function AnimeCreate() {
           autoFocus
         />
 
+        {/* Description */}
         <label>Description:</label>
         <textarea
           value={description}
           onChange={(e) => setDescription(e.target.value)}
+          rows={4}
         />
 
+        {/* Year */}
         <label>Year:</label>
         <input
           type="number"
@@ -122,6 +123,7 @@ function AnimeCreate() {
           max={new Date().getFullYear()}
         />
 
+        {/* Episodes */}
         <label>Episodes:</label>
         <input
           type="number"
@@ -130,97 +132,110 @@ function AnimeCreate() {
           min={0}
         />
 
+        {/* Studio */}
         <label>Studio:</label>
-        <input value={studio} onChange={(e) => setStudio(e.target.value)} />
+        <input 
+          value={studio} 
+          onChange={(e) => setStudio(e.target.value)} 
+        />
 
+        {/* Rating */}
         <label>Rating (0–10):</label>
         <input
           type="number"
           min={0}
           max={10}
-          step={1}
+          step={0.1}
           value={rating}
-          onChange={(e) => setRating(parseInt(e.target.value, 10))}
+          onChange={(e) => setRating(parseFloat(e.target.value))}
         />
 
+        {/* Genre */}
         <label>Genre:</label>
-        <input value={genre} onChange={(e) => setGenre(e.target.value)} />
+        <input 
+          value={genre} 
+          onChange={(e) => setGenre(e.target.value)} 
+          placeholder="Action, Adventure, Comedy"
+        />
 
+        {/* Status */}
         <label>Status:</label>
-        <select value={status} onChange={(e) => setStatus(e.target.value)}>
+        <select 
+          value={status} 
+          onChange={(e) => setStatus(e.target.value)}
+          className="pixel-select"
+        >
           <option value="Ongoing">Ongoing</option>
           <option value="Completed">Completed</option>
           <option value="Hiatus">Hiatus</option>
-          <option value="Dropped">Dropped</option>
+          <option value="Cancelled">Cancelled</option>
         </select>
 
-        <label>Image:</label>
+        {/* Image Upload */}
+        <label>Cover Image:</label>
         <Dropzone
           onDrop={(files) => setImageFile(files[0])}
+          onReject={() => setError("File type not accepted")}
           accept={IMAGE_MIME_TYPE}
           maxFiles={1}
-          maxSize={5 * 1024 ** 2}
+          maxSize={5 * 1024 ** 2} // 5MB
+          className="pixel-dropzone"
         >
-          <Group
-            justify="center"
-            gap="xl"
-            mih={220}
-            style={{ pointerEvents: "none" }}
-          >
+          <Group justify="center" gap="xl" mih={220} style={{ pointerEvents: "none" }}>
             <Dropzone.Accept>
-              <IconUpload
-                size={52}
-                color="var(--mantine-color-blue-6)"
-                stroke={1.5}
-              />
+              <IconUpload size={52} className="text-blue-500" stroke={1.5} />
             </Dropzone.Accept>
             <Dropzone.Reject>
-              <IconX
-                size={52}
-                color="var(--mantine-color-red-6)"
-                stroke={1.5}
-              />
+              <IconX size={52} className="text-red-500" stroke={1.5} />
             </Dropzone.Reject>
             <Dropzone.Idle>
-              <IconPhoto
-                size={52}
-                color="var(--mantine-color-dimmed)"
-                stroke={1.5}
-              />
+              <IconPhoto size={52} className="text-gray-500" stroke={1.5} />
             </Dropzone.Idle>
 
-            <div>
-              <Text size="xl" inline>
-                Drag image here or click to select
-              </Text>
+            <div className="text-center">
+              <Text size="xl" inline>Drag image here or click to select</Text>
               <Text size="sm" c="dimmed" inline mt={7}>
-                Only one image, max 5 MB
+                Supports PNG, JPG, WEBP (max 5MB)
               </Text>
             </div>
           </Group>
         </Dropzone>
 
+        {/* Image Preview */}
         {imageFile && (
-          <Text size="sm" mt="sm">
-            Selected image: {imageFile.name}
-          </Text>
-        )}
-        {imageFile && (
-          <img
-            src={URL.createObjectURL(imageFile)}
-            alt="Preview"
-            style={{ maxHeight: "200px", marginTop: "1rem" }}
-          />
+          <div className="mt-4">
+            <Text size="sm">Selected: {imageFile.name}</Text>
+            <img
+              src={URL.createObjectURL(imageFile)}
+              alt="Preview"
+              className="mt-2 max-h-48 object-contain border rounded"
+            />
+          </div>
         )}
 
+        {/* Error Message */}
         {error && (
-          <p style={{ color: "red", marginTop: "1rem", fontWeight: "bold" }}>
+          <div className="mt-4 p-2 bg-red-100 border border-red-400 text-red-700 rounded">
             {error}
-          </p>
+          </div>
         )}
 
-        <button type="submit" disabled={isSubmitting} style={{ marginTop: "1rem" }}>
-          {isSubmitting ? "Creating..." : "Create Anime"}
+        {/* Submit Button */}
+        <button 
+          type="submit" 
+          disabled={isSubmitting}
+          className={`pixel-button mt-6 ${isSubmitting ? 'opacity-50' : ''}`}
+        >
+          {isSubmitting ? (
+            <span className="flex items-center justify-center">
+              <svg className="animate-spin h-5 w-5 mr-2" viewBox="0 0 24 24">
+                {/* Loading spinner icon */}
+              </svg>
+              Creating...
+            </span>
+          ) : (
+            "Create Anime"
+          )}
         </button>
       </form>
     </div>
