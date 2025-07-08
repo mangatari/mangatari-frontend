@@ -25,30 +25,33 @@ function MangaCreate() {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  const uploadImageToSupabase = async (): Promise<string | null> => {
-    if (!imageFile) return null;
+const uploadImageToSupabase = async (): Promise<string | null> => {
+  if (!imageFile) return null;
 
-    try {
-      const fileExt = imageFile.name.split(".").pop();
-      const fileName = `${Date.now()}.${fileExt}`;
+  try {
+    const fileExt = imageFile.name.split(".").pop();
+    const fileName = `${Date.now()}.${fileExt}`;
 
-      const { data, error } = await supabase.storage
-        .from("manga-pics") // Make sure this bucket exists!
-        .upload(fileName, await imageFile.arrayBuffer());
+    const { error } = await supabase.storage
+      .from("manga-pics")
+      .upload(fileName, await imageFile.arrayBuffer(), {
+        contentType: imageFile.type
+      });
 
-      if (error) throw error;
+    if (error) throw error;
 
-      const {
-        data: { publicUrl },
-      } = supabase.storage.from("manga-pics").getPublicUrl(data.path);
-
-      return publicUrl;
-    } catch (err) {
-      console.error("Upload failed:", err);
-      setError("Image upload failed. Please try again.");
-      return null;
-    }
-  };
+    // Return JUST the filename since your MangaList handles the base URL
+    return fileName;
+    
+    // Or if you prefer paths starting with "/":
+    // return `/manga-pics/${fileName}`;
+    
+  } catch (err) {
+    console.error("Upload failed:", err);
+    setError("Image upload failed. Please try again.");
+    return null;
+  }
+};
 
   // Then modify your handleFormSubmit to:
   const handleFormSubmit = async (e: FormEvent) => {
