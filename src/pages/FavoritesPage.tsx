@@ -50,8 +50,11 @@ function FavoritesPage() {
           throw new Error("Failed to fetch favorites");
         }
 
-        setAnimes(await animeRes.json());
-        setMangas(await mangaRes.json());
+        const animeData = await animeRes.json();
+        const mangaData = await mangaRes.json();
+        
+        setAnimes(animeData);
+        setMangas(mangaData);
       } catch (err: any) {
         console.error("Error loading favorites:", err);
         setError(err.message || "Something went wrong");
@@ -101,7 +104,16 @@ function FavoritesPage() {
           animes.map((anime) => (
             <div key={anime.id} className="item-card">
               <Link to={`/animes/${anime.id}`} className="card-link">
-                {anime.image && <img src={`${API_URL}${anime.image}`} alt={anime.title} />}
+                {anime.image && (
+                  <img 
+                    src={anime.image} 
+                    alt={anime.title}
+                    onError={(e) => {
+                      console.error("Error loading anime image:", anime.image);
+                      e.currentTarget.style.display = 'none';
+                    }}
+                  />
+                )}
                 <p>{anime.title}</p>
               </Link>
               <button
@@ -123,7 +135,16 @@ function FavoritesPage() {
           mangas.map((manga) => (
             <div key={manga.id} className="item-card">
               <Link to={`/mangas/${manga.id}`} className="card-link">
-                {manga.image && <img src={`${API_URL}${manga.image}`} alt={manga.title} />}
+                {manga.image && (
+                  <img 
+                    src={manga.image} 
+                    alt={manga.title}
+                    onError={(e) => {
+                      console.error("Error loading manga image:", manga.image);
+                      e.currentTarget.style.display = 'none';
+                    }}
+                  />
+                )}
                 <p>{manga.title}</p>
               </Link>
               <button
@@ -167,22 +188,29 @@ function FavoritesPage() {
 
         .item-card img {
           width: 100%;
-          height: auto;
+          height: 200px;
+          object-fit: cover;
           border-radius: 8px;
+          margin-bottom: 0.5rem;
         }
 
         .item-card p {
-          margin-top: 0.5rem;
+          margin: 0.5rem 0;
           font-size: 0.75rem;
           font-weight: bold;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
         }
 
         .card-link {
           text-decoration: none;
           color: inherit;
+          display: block;
         }
 
         .pixel-button {
+          width: 100%;
           margin-top: 0.75rem;
           font-family: "Press Start 2P", monospace;
           font-size: 0.55rem;
@@ -200,6 +228,7 @@ function FavoritesPage() {
           background-color: #243b0a;
           color: #e0f2e9;
           box-shadow: 2px 2px 0 #6a7a19;
+          transform: translateY(2px);
         }
 
         .loading-text {
@@ -207,6 +236,21 @@ function FavoritesPage() {
           margin-top: 2rem;
           font-family: "Press Start 2P", monospace;
           color: #555;
+        }
+
+        @media (max-width: 768px) {
+          .card-grid {
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 1rem;
+          }
+          
+          .item-card {
+            padding: 0.75rem;
+          }
+          
+          .item-card img {
+            height: 160px;
+          }
         }
       `}</style>
     </div>

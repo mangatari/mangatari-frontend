@@ -61,56 +61,70 @@ function AnimeDetails() {
   return (
     <div className="anime-container">
       <div className="anime-card">
-      <div>
-        {anime.image && (
-          <img
-            src={`${API_URL}${anime.image.startsWith('/') ? '' : '/'}${anime.image}`}
-            alt="Anime"
-            style={{ width: "200px", marginBottom: "1rem" }}
-            onError={(e) => {
-              console.error("Error loading image:", {
-                src: e.currentTarget.src,
-                apiUrl: API_URL,
-                imagePath: anime.image,
-                fullUrl: `${API_URL}${anime.image}`
-              });
-              e.currentTarget.style.display = 'none';
-            }}
-          />
-        )}
-
-        <div className="anime-info">
-          <h2 className="anime-title">{anime.title}</h2>
-
-          <p><strong>Genre:</strong> {anime.genre ?? "N/A"}</p>
-          <p><strong>Year:</strong> {anime.year ?? "N/A"}</p>
-          <p><strong>Studio:</strong> {anime.studio ?? "N/A"}</p>
-          <p><strong>Status:</strong> {anime.status ?? "N/A"}</p>
-          <p><strong>Episodes:</strong> {anime.episodes ?? "N/A"}</p>
-          <p className="anime-description">{anime.description ?? "No description available."}</p>
-
-          <div className="rating-section">
-            <p><strong>Your Rating:</strong></p>
-            <Rating
-              value={anime.rating ? anime.rating / 2 : 0}
-              onChange={handleRatingChange}
-              fractions={2}
-              color="violet"
-              size="lg"
+        <div>
+          {anime.image && (
+            <img
+              src={anime.image} // Use the URL directly without modification
+              alt="Anime"
+              style={{ width: "200px", marginBottom: "1rem" }}
+              onError={(e) => {
+                console.error("Error loading image:", {
+                  src: e.currentTarget.src,
+                  apiUrl: API_URL,
+                  imagePath: anime.image,
+                  fullUrl: e.currentTarget.src,
+                });
+                e.currentTarget.style.display = "none";
+              }}
             />
-            <p className="rating-value">{anime.rating ?? 0}/10</p>
-          </div>
+          )}
 
-          <div className="back-link-container">
-            <Link to="/animelist" className="back-link">
-              &larr; Back to Anime
-            </Link>
-            <Link to={`/animes/edit/${animeId}`} className="back-link">
-              &larr; Edit Anime
-            </Link>
+          <div className="anime-info">
+            <h2 className="anime-title">{anime.title}</h2>
+
+            <p>
+              <strong>Genre:</strong> {anime.genre ?? "N/A"}
+            </p>
+            <p>
+              <strong>Year:</strong> {anime.year ?? "N/A"}
+            </p>
+            <p>
+              <strong>Studio:</strong> {anime.studio ?? "N/A"}
+            </p>
+            <p>
+              <strong>Status:</strong> {anime.status ?? "N/A"}
+            </p>
+            <p>
+              <strong>Episodes:</strong> {anime.episodes ?? "N/A"}
+            </p>
+            <p className="anime-description">
+              {anime.description ?? "No description available."}
+            </p>
+
+            <div className="rating-section">
+              <p>
+                <strong>Your Rating:</strong>
+              </p>
+              <Rating
+                value={anime.rating ? anime.rating / 2 : 0}
+                onChange={handleRatingChange}
+                fractions={2}
+                color="violet"
+                size="lg"
+              />
+              <p className="rating-value">{anime.rating ?? 0}/10</p>
+            </div>
+
+            <div className="back-link-container">
+              <Link to="/animelist" className="back-link">
+                &larr; Back to Anime
+              </Link>
+              <Link to={`/animes/edit/${animeId}`} className="back-link">
+                &larr; Edit Anime
+              </Link>
+            </div>
           </div>
         </div>
-      </div>
       </div>
 
       <style>{`

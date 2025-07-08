@@ -39,12 +39,6 @@ function HomePage() {
       .catch((err) => console.error("Error fetching mangas:", err));
   }, []);
 
-  const getImageUrl = (image: string | null) => {
-    if (!image) return ""; // Return blank if image is null or undefined
-    const cleanPath = image.startsWith("/") ? image : `/${image}`;
-    return `${VITE_API_URL}${cleanPath}`;
-  };
-
   return (
     <div
       style={{
@@ -91,21 +85,26 @@ function HomePage() {
                     fontSize: "0.75rem",
                   }}
                 >
-                  <img
-                    src={getImageUrl(anime.image)}
-                    alt={anime.title}
-                    style={{
-                      width: "100%",
-                      height: "200px",
-                      objectFit: "cover",
-                      borderRadius: "12px",
-                      imageRendering: "pixelated",
-                    }}
-                    onError={(e) => {
-                      console.error("Anime image error", e.currentTarget.src);
-                      e.currentTarget.style.display = "none";
-                    }}
-                  />
+                  {anime.image && (
+                    <img
+                      src={anime.image}
+                      alt={anime.title}
+                      style={{
+                        width: "100%",
+                        height: "200px",
+                        objectFit: "cover",
+                        borderRadius: "12px",
+                        imageRendering: "pixelated",
+                      }}
+                      onError={(e) => {
+                        console.error("Anime image error", {
+                          src: e.currentTarget.src,
+                          imagePath: anime.image
+                        });
+                        e.currentTarget.style.display = "none";
+                      }}
+                    />
+                  )}
                   <h3 style={{ textAlign: "center", marginTop: "0.5rem" }}>
                     {anime.title}
                   </h3>
@@ -174,21 +173,26 @@ function HomePage() {
                     fontSize: "0.75rem",
                   }}
                 >
-                  <img
-                    src={getImageUrl(manga.image)}
-                    alt={manga.title}
-                    style={{
-                      width: "100%",
-                      height: "200px",
-                      objectFit: "cover",
-                      borderRadius: "12px",
-                      imageRendering: "pixelated",
-                    }}
-                    onError={(e) => {
-                      console.error("Manga image error", e.currentTarget.src);
-                      e.currentTarget.style.display = "none";
-                    }}
-                  />
+                  {manga.image && (
+                    <img
+                      src={manga.image}
+                      alt={manga.title}
+                      style={{
+                        width: "100%",
+                        height: "200px",
+                        objectFit: "cover",
+                        borderRadius: "12px",
+                        imageRendering: "pixelated",
+                      }}
+                      onError={(e) => {
+                        console.error("Manga image error", {
+                          src: e.currentTarget.src,
+                          imagePath: manga.image
+                        });
+                        e.currentTarget.style.display = "none";
+                      }}
+                    />
+                  )}
                   <h3 style={{ textAlign: "center", marginTop: "0.5rem" }}>
                     {manga.title}
                   </h3>

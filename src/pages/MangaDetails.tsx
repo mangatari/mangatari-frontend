@@ -62,19 +62,17 @@ function MangaDetails() {
   return (
     <div className="anime-container">
       <div className="anime-card">
-      {manga.image && (
+        {manga.image && (
           <img
-            src={`${API_URL}${manga.image.startsWith('/') ? '' : '/'}${manga.image}`}
+            src={manga.image} // Use the URL directly without modification
             alt="Manga"
             style={{ width: "200px", marginBottom: "1rem" }}
             onError={(e) => {
               console.error("Error loading image:", {
                 src: e.currentTarget.src,
-                apiUrl: API_URL,
                 imagePath: manga.image,
-                fullUrl: `${API_URL}${manga.image}`
               });
-              e.currentTarget.style.display = 'none';
+              e.currentTarget.style.display = "none";
             }}
           />
         )}
@@ -95,12 +93,16 @@ function MangaDetails() {
             <strong className="square">Status:</strong> {manga.status ?? "N/A"}
           </p>
           <p>
-            <strong className="square">Volumes:</strong> {manga.volumes ?? "N/A"}
+            <strong className="square">Volumes:</strong>{" "}
+            {manga.volumes ?? "N/A"}
           </p>
           <p>
-            <strong className="square">Chapters:</strong> {manga.chapters ?? "N/A"}
+            <strong className="square">Chapters:</strong>{" "}
+            {manga.chapters ?? "N/A"}
           </p>
-          <p className="anime-description">{manga.description ?? "No description available."}</p>
+          <p className="anime-description">
+            {manga.description ?? "No description available."}
+          </p>
 
           <div className="rating-section">
             <p>

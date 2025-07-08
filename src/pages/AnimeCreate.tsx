@@ -9,16 +9,15 @@ import { supabase } from "../lib/supabase";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-function MangaCreate() {
+function AnimeCreate() {
   const navigate = useNavigate();
 
   // Form state
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [year, setYear] = useState<number>(new Date().getFullYear());
-  const [volumes, setVolumes] = useState<number>(0);
-  const [chapters, setChapters] = useState<number>(0);
-  const [author, setAuthor] = useState<string>("");
+  const [episodes, setEpisodes] = useState<number>(0);
+  const [studio, setStudio] = useState<string>("");
   const [rating, setRating] = useState<number>(0);
   const [genre, setGenre] = useState<string>("");
   const [status, setStatus] = useState<string>("Ongoing");
@@ -26,81 +25,90 @@ function MangaCreate() {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  const uploadImageToSupabase = async (): Promise<string | null> => {
-    if (!imageFile) return null;
+const uploadImageToSupabase = async (): Promise<string | null> => {
+  if (!imageFile) return null;
 
-    try {
-      const fileExt = imageFile.name.split('.').pop();
-      const fileName = `${Date.now()}.${fileExt}`;
-      
-      const { data, error } = await supabase.storage
-        .from('manga-pics')
-        .upload(fileName, await imageFile.arrayBuffer());
-
-      if (error) throw error;
-
-      const { data: { publicUrl } } = supabase.storage
-        .from('manga-pics')
-        .getPublicUrl(data.path);
-
-      return publicUrl;
-    } catch (err) {
-      console.error("Supabase upload failed:", err);
-      setError("Failed to upload image. Please try again.");
-      return null;
-    }
-  };
-
-  const handleFormSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setError(null);
-
-    try {
-      // First upload image if one was selected
-      const imageUrl = imageFile ? await uploadImageToSupabase() : null;
-      if (imageFile && !imageUrl) return; // Stop if upload failed
-
-      // Then create the manga record
-      const response = await axios.post(`${API_URL}/api/mangas`, {
-        title,
-        description,
-        year,
-        volumes,
-        chapters,
-        author,
-        rating,
-        genre,
-        status,
-        imageUrl
-      }, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("authToken")}`
-        }
+  try {
+    const fileExt = imageFile.name.split('.').pop();
+    const fileName = `${Date.now()}.${fileExt}`;
+    
+    // Convert File to ArrayBuffer for Supabase upload
+    const fileBuffer = await imageFile.arrayBuffer();
+    
+    const { data, error } = await supabase.storage
+      .from('anime-pics')
+      .upload(fileName, fileBuffer, {  // Changed from imageFile to fileBuffer
+        cacheControl: '3600',
+        upsert: false,
+        contentType: imageFile.type
       });
 
-      navigate('/mangalist', { 
-        state: { 
-          toast: "Manga created successfully!",
-          manga: response.data // Pass the created manga data
-        } 
-      });
-      
-    } catch (err) {
-      console.error("Creation failed:", err);
-      setError(
-        axios.isAxiosError(err) 
-          ? err.response?.data?.message || "Failed to create manga"
-          : "An unexpected error occurred"
-      );
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+    if (error) throw error;
+
+    // Get public URL - simplified syntax
+    const publicUrl = `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/anime-pics/${data.path}`;
+return publicUrl;
+    
+  } catch (err) {
+    console.error("Upload error:", err);
+    setError(
+      err instanceof Error 
+        ? `Image upload failed: ${err.message}`
+        : "Image upload failed"
+    );
+    return null;
+  }
+};
+
+const handleFormSubmit = async (e: FormEvent) => {
+  e.preventDefault();
+  setIsSubmitting(true);
+  setError(null);
+
+  try {
+    // First upload image if one was selected
+    const imageUrl = imageFile ? await uploadImageToSupabase() : null;
+    if (imageFile && !imageUrl) return; // Stop if upload failed
+
+    // Then create the anime record
+    const response = await axios.post(`${API_URL}/api/animes`, {
+      title,
+      description,
+      year,
+      episodes,
+      studio,
+      rating,
+      genre,
+      status,
+      imageUrl
+    }, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("authToken")}`
+      }
+    });
+
+    navigate('/animelist', { 
+      state: { 
+        toast: "Anime created successfully!",
+        anime: response.data // Pass the created anime data
+      } 
+    });
+    
+  } catch (err) {
+    console.error("Creation failed:", err);
+    setError(
+      axios.isAxiosError(err) 
+        ? err.response?.data?.message || "Failed to create anime"
+        : "An unexpected error occurred"
+    );
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
   return (
     <div className="pixel-page">
-      <h3 className="pixel-titel">Create a New Manga</h3>
+      <h3 className="pixel-titel">Create a New Anime</h3>
 
       <form className="pixel-form" onSubmit={handleFormSubmit}>
         {/* Title */}
@@ -130,29 +138,20 @@ function MangaCreate() {
           max={new Date().getFullYear()}
         />
 
-        {/* Volumes */}
-        <label>Volumes:</label>
+        {/* Episodes */}
+        <label>Episodes:</label>
         <input
           type="number"
-          value={volumes}
-          onChange={(e) => setVolumes(Number(e.target.value))}
+          value={episodes}
+          onChange={(e) => setEpisodes(Number(e.target.value))}
           min={0}
         />
 
-        {/* Chapters */}
-        <label>Chapters:</label>
-        <input
-          type="number"
-          value={chapters}
-          onChange={(e) => setChapters(Number(e.target.value))}
-          min={0}
-        />
-
-        {/* Author */}
-        <label>Author:</label>
+        {/* Studio */}
+        <label>Studio:</label>
         <input 
-          value={author} 
-          onChange={(e) => setAuthor(e.target.value)} 
+          value={studio} 
+          onChange={(e) => setStudio(e.target.value)} 
         />
 
         {/* Rating */}
@@ -184,7 +183,7 @@ function MangaCreate() {
           <option value="Ongoing">Ongoing</option>
           <option value="Completed">Completed</option>
           <option value="Hiatus">Hiatus</option>
-          <option value="Dropped">Dropped</option>
+          <option value="Cancelled">Cancelled</option>
         </select>
 
         {/* Image Upload */}
@@ -250,7 +249,7 @@ function MangaCreate() {
               Creating...
             </span>
           ) : (
-            "Create Manga"
+            "Create Anime"
           )}
         </button>
       </form>
@@ -258,4 +257,4 @@ function MangaCreate() {
   );
 }
 
-export default MangaCreate;
+export default AnimeCreate;
