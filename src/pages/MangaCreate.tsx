@@ -5,6 +5,7 @@ import axios from "axios";
 import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone";
 import { IconUpload, IconPhoto, IconX } from "@tabler/icons-react";
 import { Group, Text } from "@mantine/core";
+import { supabase } from "../lib/supabase";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -24,73 +25,68 @@ function MangaCreate() {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  const uploadImageToFirebase = async (): Promise<{ url: string; filename: string } | null> => {
-    if (!imageFile) return null;
+  const uploadImageToSupabase = async (): Promise<string | null> => {
+  if (!imageFile) return null;
 
-    const token = localStorage.getItem("authToken");
-    const formData = new FormData();
-    formData.append("file", imageFile);
-    formData.append("type", "manga");
+  try {
+    const fileExt = imageFile.name.split('.').pop();
+    const fileName = `${Date.now()}.${fileExt}`;
+    
+    const { data, error } = await supabase.storage
+      .from('manga-pics')  // Make sure this bucket exists!
+      .upload(fileName, await imageFile.arrayBuffer());
 
-    try {
-      const res = await axios.post(`${API_URL}/api/upload`, formData, {
-        headers: {
-          Authorization: token ? `Bearer ${token}` : "",
-          "Content-Type": "multipart/form-data",
-        },
-      });
+    if (error) throw error;
 
-      return res.data;
-    } catch (err) {
-      console.error("Image upload failed:", err);
-      setError("Image upload failed. Please try again.");
-      return null;
-    }
-  };
+    const { data: { publicUrl } } = supabase.storage
+      .from('manga-pics')
+      .getPublicUrl(data.path);
 
-  const handleFormSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setError(null);
+    return publicUrl;
+  } catch (err) {
+    console.error("Upload failed:", err);
+    setError("Image upload failed. Please try again.");
+    return null;
+  }
+};
 
-    const token = localStorage.getItem("authToken");
+// Then modify your handleFormSubmit to:
+const handleFormSubmit = async (e: FormEvent) => {
+  e.preventDefault();
+  setIsSubmitting(true);
+  setError(null);
 
-    let uploadedImage;
-    if (imageFile) {
-      uploadedImage = await uploadImageToFirebase();
-      if (!uploadedImage) {
-        setIsSubmitting(false);
-        return;
+  try {
+    // Upload image first if exists
+    const imageUrl = imageFile ? await uploadImageToSupabase() : null;
+    if (imageFile && !imageUrl) return; // Stop if upload failed
+
+    // Create manga with the image URL
+    await axios.post(`${API_URL}/api/mangas`, {
+      title,
+      description,
+      year,
+      volumes,
+      chapters,
+      author,
+      rating,
+      genre,
+      status,
+      imageUrl  // Changed from just 'image'
+    }, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("authToken")}`
       }
-    }
+    });
 
-    try {
-      await axios.post(`${API_URL}/api/mangas`, {
-        title,
-        description,
-        year,
-        volumes,
-        chapters,
-        author,
-        rating,
-        genre,
-        status,
-        image: uploadedImage?.url || "",
-      }, {
-        headers: {
-          Authorization: token ? `Bearer ${token}` : "",
-        },
-      });
-
-      localStorage.setItem("showToast", "Manga created successfully!");
-      navigate('/mangalist');
-    } catch (err) {
-      console.error(err);
-      setError("Failed to create manga. Please try again.");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+    navigate('/mangalist');
+  } catch (err) {
+    console.error("Creation failed:", err);
+    setError("Failed to create manga");
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
   return (
     <div className="pixel-page">
