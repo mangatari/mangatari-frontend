@@ -237,13 +237,20 @@ function MangaList() {
               {manga.image && (
                 <img
                   src={
+                    // Handle cases where:
+                    // 1. Full URL is already provided
+                    // 2. Just the filename is provided
+                    // 3. Path needs Supabase prefix
                     manga.image.startsWith("http")
-                      ? manga.image // Use as-is if full URL
+                      ? manga.image
+                      : manga.image.startsWith("/")
+                      ? `https://ffjzetdwwdmqyluotgff.supabase.co/storage/v1/object/public${manga.image}`
                       : `https://ffjzetdwwdmqyluotgff.supabase.co/storage/v1/object/public/manga-pics/${manga.image}`
                   }
                   alt={manga.title}
                   style={{ width: "200px", marginBottom: "1rem" }}
                   onError={(e) => {
+                    console.error("Failed to load image:", manga.image);
                     e.currentTarget.style.display = "none";
                   }}
                 />
