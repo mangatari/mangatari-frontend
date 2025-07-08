@@ -46,7 +46,8 @@ const uploadImageToSupabase = async (): Promise<string | null> => {
     if (error) throw error;
 
     // Get public URL - simplified syntax
-    return `${process.env.VITE_SUPABASE_URL}/storage/v1/object/public/anime-pics/${data.path}`;
+    const publicUrl = `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/anime-pics/${data.path}`;
+return publicUrl;
     
   } catch (err) {
     console.error("Upload error:", err);
