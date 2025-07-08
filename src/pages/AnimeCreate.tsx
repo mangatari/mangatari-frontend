@@ -32,30 +32,16 @@ const uploadImageToSupabase = async (): Promise<string | null> => {
     const fileExt = imageFile.name.split('.').pop();
     const fileName = `${Date.now()}.${fileExt}`;
     
-    // Convert File to ArrayBuffer for Supabase upload
-    const fileBuffer = await imageFile.arrayBuffer();
-    
     const { data, error } = await supabase.storage
       .from('anime-pics')
-      .upload(fileName, fileBuffer, {  // Changed from imageFile to fileBuffer
-        cacheControl: '3600',
-        upsert: false,
-        contentType: imageFile.type
-      });
+      .upload(fileName, await imageFile.arrayBuffer());
 
     if (error) throw error;
 
-    // Get public URL - simplified syntax
-    const publicUrl = `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/anime-pics/${data.path}`;
-return publicUrl;
-    
+    return `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/anime-pics/${data.path}`;
   } catch (err) {
-    console.error("Upload error:", err);
-    setError(
-      err instanceof Error 
-        ? `Image upload failed: ${err.message}`
-        : "Image upload failed"
-    );
+    console.error("Supabase upload failed:", err);
+    setError("Failed to upload image. Please try again.");
     return null;
   }
 };
