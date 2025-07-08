@@ -113,12 +113,20 @@ function MangaList() {
 
   return (
     <div className="pokemon-container">
-      <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "1rem" }}>
-        <div style={{
-          position: "relative",
-          width: "300px",
-          fontFamily: "'Press Start 2P', monospace"
-        }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "flex-end",
+          marginBottom: "1rem",
+        }}
+      >
+        <div
+          style={{
+            position: "relative",
+            width: "300px",
+            fontFamily: "'Press Start 2P', monospace",
+          }}
+        >
           <input
             type="text"
             onChange={onChange}
@@ -137,28 +145,32 @@ function MangaList() {
               outline: "none",
               textTransform: "uppercase",
               letterSpacing: "1px",
-              imageRendering: "pixelated"
+              imageRendering: "pixelated",
             }}
           />
-          <div style={{
-            position: "absolute",
-            right: "12px",
-            top: "50%",
-            transform: "translateY(-50%)",
-            pointerEvents: "none",
-            fontSize: "0.8rem",
-            color: "#243b0a"
-          }}>
+          <div
+            style={{
+              position: "absolute",
+              right: "12px",
+              top: "50%",
+              transform: "translateY(-50%)",
+              pointerEvents: "none",
+              fontSize: "0.8rem",
+              color: "#243b0a",
+            }}
+          >
             🔍
           </div>
         </div>
       </div>
 
-      <div style={{
-        position: "relative",
-        display: "inline-block",
-        fontFamily: "'Press Start 2P', monospace"
-      }}>
+      <div
+        style={{
+          position: "relative",
+          display: "inline-block",
+          fontFamily: "'Press Start 2P', monospace",
+        }}
+      >
         <select
           value={sortOption}
           onChange={(e) => {
@@ -180,7 +192,7 @@ function MangaList() {
             cursor: "pointer",
             appearance: "none",
             outline: "none",
-            textTransform: "uppercase"
+            textTransform: "uppercase",
           }}
         >
           <option value="">SORT BY</option>
@@ -189,15 +201,17 @@ function MangaList() {
           <option value="year">NEWEST</option>
           <option value="rating">BEST</option>
         </select>
-        <div style={{
-          position: "absolute",
-          right: "10px",
-          top: "50%",
-          transform: "translateY(-50%)",
-          pointerEvents: "none",
-          fontSize: "0.8rem",
-          color: "#243b0a"
-        }}>
+        <div
+          style={{
+            position: "absolute",
+            right: "10px",
+            top: "50%",
+            transform: "translateY(-50%)",
+            pointerEvents: "none",
+            fontSize: "0.8rem",
+            color: "#243b0a",
+          }}
+        >
           ▼
         </div>
       </div>
@@ -205,20 +219,32 @@ function MangaList() {
       <h1 className="pokemon-title">All Mangas</h1>
 
       <div style={{ textAlign: "center", marginBottom: "2rem" }}>
-        <Link to="/mangas/create" className="pokemon-button">Add New Manga</Link>
+        <Link to="/mangas/create" className="pokemon-button">
+          Add New Manga
+        </Link>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: "1.5rem" }}>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))",
+          gap: "1.5rem",
+        }}
+      >
         {mangas.map((manga) => (
           <div key={manga.id} className="pokemon-card">
             <Link to={`/mangas/${manga.id}`}>
               {manga.image && (
                 <img
-                  src={`${API_URL}${manga.image.startsWith('/') ? '' : '/'}${manga.image}`}
-                  alt="Manga"
+                  src={
+                    manga.image.startsWith("http")
+                      ? manga.image // Use as-is if full URL
+                      : `https://ffjzetdwwdmqyluotgff.supabase.co/storage/v1/object/public/manga-pics/${manga.image}`
+                  }
+                  alt={manga.title}
                   style={{ width: "200px", marginBottom: "1rem" }}
                   onError={(e) => {
-                    e.currentTarget.style.display = 'none';
+                    e.currentTarget.style.display = "none";
                   }}
                 />
               )}

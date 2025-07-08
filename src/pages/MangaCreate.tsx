@@ -26,67 +26,71 @@ function MangaCreate() {
   const [error, setError] = useState<string | null>(null);
 
   const uploadImageToSupabase = async (): Promise<string | null> => {
-  if (!imageFile) return null;
+    if (!imageFile) return null;
 
-  try {
-    const fileExt = imageFile.name.split('.').pop();
-    const fileName = `${Date.now()}.${fileExt}`;
-    
-    const { data, error } = await supabase.storage
-      .from('manga-pics')  // Make sure this bucket exists!
-      .upload(fileName, await imageFile.arrayBuffer());
+    try {
+      const fileExt = imageFile.name.split(".").pop();
+      const fileName = `${Date.now()}.${fileExt}`;
 
-    if (error) throw error;
+      const { data, error } = await supabase.storage
+        .from("manga-pics") // Make sure this bucket exists!
+        .upload(fileName, await imageFile.arrayBuffer());
 
-    const { data: { publicUrl } } = supabase.storage
-      .from('manga-pics')
-      .getPublicUrl(data.path);
+      if (error) throw error;
 
-    return publicUrl;
-  } catch (err) {
-    console.error("Upload failed:", err);
-    setError("Image upload failed. Please try again.");
-    return null;
-  }
-};
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from("manga-pics").getPublicUrl(data.path);
 
-// Then modify your handleFormSubmit to:
-const handleFormSubmit = async (e: FormEvent) => {
-  e.preventDefault();
-  setIsSubmitting(true);
-  setError(null);
+      return publicUrl;
+    } catch (err) {
+      console.error("Upload failed:", err);
+      setError("Image upload failed. Please try again.");
+      return null;
+    }
+  };
 
-  try {
-    // Upload image first if exists
-    const imageUrl = imageFile ? await uploadImageToSupabase() : null;
-    if (imageFile && !imageUrl) return; // Stop if upload failed
+  // Then modify your handleFormSubmit to:
+  const handleFormSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setError(null);
 
-    // Create manga with the image URL
-    await axios.post(`${API_URL}/api/mangas`, {
-      title,
-      description,
-      year,
-      volumes,
-      chapters,
-      author,
-      rating,
-      genre,
-      status,
-      imageUrl  // Changed from just 'image'
-    }, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("authToken")}`
-      }
-    });
+    try {
+      // Upload image first if exists
+      const imageUrl = imageFile ? await uploadImageToSupabase() : null;
+      if (imageFile && !imageUrl) return; // Stop if upload failed
 
-    navigate('/mangalist');
-  } catch (err) {
-    console.error("Creation failed:", err);
-    setError("Failed to create manga");
-  } finally {
-    setIsSubmitting(false);
-  }
-};
+      // Create manga with the image URL
+      await axios.post(
+        `${API_URL}/api/mangas`,
+        {
+          title,
+          description,
+          year,
+          volumes,
+          chapters,
+          author,
+          rating,
+          genre,
+          status,
+          imageUrl, // Changed from just 'image'
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+          },
+        }
+      );
+
+      navigate("/mangalist");
+    } catch (err) {
+      console.error("Creation failed:", err);
+      setError("Failed to create manga");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div className="pixel-page">
@@ -221,7 +225,11 @@ const handleFormSubmit = async (e: FormEvent) => {
           </p>
         )}
 
-        <button type="submit" disabled={isSubmitting} style={{ marginTop: "1rem" }}>
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          style={{ marginTop: "1rem" }}
+        >
           {isSubmitting ? "Creating..." : "Create Manga"}
         </button>
       </form>

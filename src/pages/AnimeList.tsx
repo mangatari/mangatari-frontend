@@ -105,7 +105,13 @@ function AnimeList() {
   return (
     <div className="pokemon-container">
       {/* Search + Sort */}
-      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "1.5rem" }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          marginBottom: "1.5rem",
+        }}
+      >
         <input
           type="text"
           onChange={onChange}
@@ -171,10 +177,12 @@ function AnimeList() {
               {anime.image && (
                 <img
                   src={
-            anime.image.startsWith('http') 
-              ? anime.image // Use as-is if full URL
-              : `https://ffjzetdwwdmqyluotgff.supabase.co/storage/v1/object${anime.image.startsWith('/') ? '' : '/'}${anime.image}`
-          }
+                    anime.image.startsWith("http")
+                      ? anime.image // Use as-is if full URL
+                      : `https://ffjzetdwwdmqyluotgff.supabase.co/storage/v1/object${
+                          anime.image.startsWith("/") ? "" : "/"
+                        }${anime.image}`
+                  }
                   alt={anime.title}
                   style={{ width: "200px", marginBottom: "1rem" }}
                   onError={(e) => {
@@ -209,14 +217,14 @@ function AnimeList() {
                   transition: "background-color 0.2s, color 0.2s",
                 }}
                 onMouseEnter={(e) => {
-                  (e.currentTarget.style.backgroundColor = "#243b0a");
-                  (e.currentTarget.style.color = "#e0f2e9");
-                  (e.currentTarget.style.boxShadow = "2px 2px 0 #6a7a19");
+                  e.currentTarget.style.backgroundColor = "#243b0a";
+                  e.currentTarget.style.color = "#e0f2e9";
+                  e.currentTarget.style.boxShadow = "2px 2px 0 #6a7a19";
                 }}
                 onMouseLeave={(e) => {
-                  (e.currentTarget.style.backgroundColor = "#e0f2e9");
-                  (e.currentTarget.style.color = "#243b0a");
-                  (e.currentTarget.style.boxShadow = "4px 4px 0 #6a7a19");
+                  e.currentTarget.style.backgroundColor = "#e0f2e9";
+                  e.currentTarget.style.color = "#243b0a";
+                  e.currentTarget.style.boxShadow = "4px 4px 0 #6a7a19";
                 }}
               >
                 ❤️ Favorite
