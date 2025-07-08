@@ -170,7 +170,11 @@ function AnimeList() {
             <Link to={`/animes/${anime.id}`}>
               {anime.image && (
                 <img
-                  src={`${API_URL}${anime.image.startsWith("/") ? "" : "/"}${anime.image}`}
+                  src={
+            anime.image.startsWith('http') 
+              ? anime.image // Use as-is if full URL
+              : `https://ffjzetdwwdmqyluotgff.supabase.co/storage/v1/object${anime.image.startsWith('/') ? '' : '/'}${anime.image}`
+          }
                   alt={anime.title}
                   style={{ width: "200px", marginBottom: "1rem" }}
                   onError={(e) => {
