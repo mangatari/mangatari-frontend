@@ -106,7 +106,7 @@ function AnimeDetails() {
               &larr; Back to Anime
             </Link>
             <Link to={`/animes/edit/${animeId}`} className="back-link">
-              &larr; Edit Manga
+              &larr; Edit Anime
             </Link>
           </div>
         </div>
